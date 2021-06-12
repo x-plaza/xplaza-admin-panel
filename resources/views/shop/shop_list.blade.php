@@ -47,9 +47,11 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-md-2 ">
-                                        <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#add-modal-lg">
-                                            Add Shop
-                                        </button>
+                                        @if(App\Libraries\AclHandler::hasAccess('Shop','add') == true)
+                                            <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#add-modal-lg">
+                                                Add Shop
+                                            </button>
+                                       @endif
                                     </div>
                                 </div>
 
@@ -66,6 +68,7 @@
                                             <th>Name</th>
                                             <th>Description</th>
                                             <th>Address</th>
+                                            <th>Location</th>
                                             <th>Action</th>
                                         </tr>
                                         </thead>
@@ -140,20 +143,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
+
                     <div class="edit_response_msg_area"></div>
-                    <input type="hidden" class="shop_id">
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Shop Name</label>
-                        <input name="shop_name" type="text" class="form-control edit_shop_name" placeholder="Enter Shop Name">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Description</label>
-                        <textarea name="shop_description" class="form-control edit_shop_description"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Address</label>
-                        <textarea name="shop_address" class="form-control edit_shop_address"></textarea>
-                    </div>
+                    <div class="edit_data_content"></div>
+
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -184,6 +177,7 @@
                     iDisplayLength: 25,
                     processing: true,
                     serverSide: true,
+                    lengthChange: false,
                     searching: true,
                     ajax: {
                         headers: {
@@ -196,6 +190,7 @@
                         {data: 'name', name: 'name', searchable: true},
                         {data: 'description', name: 'description', searchable: true},
                         {data: 'address', name: 'address', searchable: true},
+                        {data: 'location_name', name: 'location_name', searchable: true},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
                     "aaSorting": []
@@ -300,11 +295,7 @@
                     success: function (response) {
                         btn.prop('disabled', false);
                         if(response.responseCode == 1){
-                            // $('.edit_shop_name').val(response.data.name);
-                            // $('.edit_shop_description').val(response.data.name);
-                            // $('.edit_shop_address').val(response.data.name);
-                            // $('.shop_id').val(response.data.name);
-
+                            $('.edit_data_content').html(response.html);
                             $('#edit-modal-lg').modal();
                         }else{
 
@@ -312,6 +303,81 @@
                     }
                 });
 
+            });
+
+
+            $(document).on('click', '.update_new_shop', function () {
+                $('.edit_response_msg_area').empty();
+                var edit_location_id = $('.edit_location_id').val();
+                var edit_shop_id = $('.edit_shop_id').val();
+                var edit_shop_name = $('.edit_shop_name').val();
+                var edit_shop_description = $('.edit_shop_description').val();
+                var edit_shop_address = $('.edit_shop_address').val();
+
+                if (edit_location_id == '') {
+                    alert("please select location name");
+                    return false;
+                }
+                if (edit_shop_name == '') {
+                    alert("please insert shop name");
+                    return false;
+                }
+                if (edit_shop_description == '') {
+                    alert("please insert shop description");
+                    return false;
+                }
+                if (edit_shop_address == '') {
+                    alert("please insert shop address");
+                    return false;
+                }
+
+                var btn = $(this);
+                btn.prop('disabled', true);
+                $('.spinner-icon').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+
+                $.ajax({
+                    url: '{{ url('/shop/update-shop') }}',
+                    type: "POST",
+                    //dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: {
+                        edit_shop_id: edit_shop_id,
+                        edit_location_id: edit_location_id,
+                        edit_shop_name: edit_shop_name,
+                        edit_shop_description: edit_shop_description,
+                        edit_shop_address: edit_shop_address
+                    },
+                    success: function (response) {
+                        btn.prop('disabled', false);
+                        $('.spinner-icon').empty();
+
+                        if (response.responseCode == 1) {
+                            $('.edit_response_msg_area').html('<div class="alert alert-success">\n' +
+                                '                                <strong>Success!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+
+                            $('.alert-success').fadeOut(3000);
+
+                            setTimeout(function () {
+                                $('#edit-modal-lg').modal('hide');
+                            }, 3200);
+
+                            var dataTable = $('#shop_list').dataTable();
+                            dataTable.fnDestroy();
+                            getShopList();
+
+                        } else {
+                            $('.edit_response_msg_area').html('<div class="alert alert-danger">\n' +
+                                '                                <strong>Error!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+
+                    }
+                });
             });
 
 

@@ -1,0 +1,288 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Libraries\AclHandler;
+use App\Libraries\HandleApi;
+use App\shop;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
+
+class adminUserController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    public function userList()
+    {
+        if (AclHandler::hasAccess('User Creation','full') == false){
+            die('Not access . Recorded this '); exit();
+        }
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/role";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $json_resp = json_decode($curlOutput);
+        $roles = isset($json_resp->data) ? $json_resp->data : [];
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/shop";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $json_resp = json_decode($curlOutput);
+        $shops = isset($json_resp->data) ? $json_resp->data : [];
+
+        return view('admin_user.admin_user_list',compact('roles','shops'));
+    }
+
+
+    public function getList()
+    {
+        $api_url = "https://xplaza-backend.herokuapp.com/api/adminuser";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+
+        $decodedData = json_decode($curlOutput);
+        $data = $decodedData->data;
+
+        return Datatables::of(collect($data))
+            ->addColumn('action', function ($data) {
+                $action = '';
+                if (AclHandler::hasAccess('User Creation','update') == true) {
+                    $action = '<button type="button" class="btn btn-info btn-xs open_admin_modal" data-admin_id="' . $data->id . '" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
+                }
+                if (AclHandler::hasAccess('User Creation','delete') == true){
+                    $action .= ' <button type="button" class="btn btn-danger btn-xs deleteAdmin" data-admin_id="'.$data->id.'"><b><i class="fa fa-trash"></i> Delete</b></button>';
+                }
+                return $action;
+            })
+            ->removeColumn('id')
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        if (AclHandler::hasAccess('User Creation','add') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
+        $rules = [
+            'role_id'        => 'required',
+            'name' => 'required',
+            'password'     => 'required'
+           // 'salt'      => 'required'
+        ];
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $role_id = $request->get('role_id');
+        $shop_id = $request->get('shop_id');
+        $name = $request->get('name');
+        $password = $request->get('password');
+        $salt = '123';
+
+        $bodyData = [
+            "name"=>$name,
+            "password"=>$password,
+            "role_id"=>$role_id,
+            "salt"=>$salt,
+            "shop_id"=>$shop_id
+        ];
+        $fieldData = json_encode($bodyData);
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/adminuser/add";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
+
+        $decodedResp = json_decode($curlOutput);
+
+        if($decodedResp->status == 201){
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully added']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function adminInfo(Request $request)
+    {
+        $rules = [
+            'admin_id'        => 'required'
+        ];
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $admin_id = $request->get('admin_id');
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/role";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $json_resp = json_decode($curlOutput);
+        $roles = isset($json_resp->data) ? $json_resp->data : [];
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/shop";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $json_resp = json_decode($curlOutput);
+        $shops = isset($json_resp->data) ? $json_resp->data : [];
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/adminuser/".intval($admin_id);
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $decodedData = json_decode($curlOutput);
+        $admin_data = isset($decodedData->data) ? $decodedData->data : [];
+
+        $public_html = strval(view("admin_user.modal_data", compact('admin_data','roles','shops')));
+
+        return response()->json(['responseCode' => 1, 'html' => $public_html,'message'=>'Successfully fetches']);
+
+
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function updateAdmin(Request $request)
+    {
+
+        if (AclHandler::hasAccess('User Creation','update') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+        $rules = [
+            'edit_admin_id'        => 'required',
+            'edit_role_id'        => 'required',
+            'edit_name' => 'required',
+            'edit_password'     => 'required'
+            //'edit_salt'      => 'required'
+        ];
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $admin_id = $request->get('edit_admin_id');
+        $role_id = $request->get('edit_role_id');
+        $shop_id = $request->get('edit_shop_id');
+        $name = $request->get('edit_name');
+        $password = $request->get('edit_password');
+        $salt = 456;
+
+        $bodyData = [
+            "id"=>$admin_id,
+            "name"=>$name,
+            "password"=>$password,
+            "role_id"=>$role_id,
+            "salt"=>$salt,
+            "shop_id"=>$shop_id
+        ];
+        $fieldData = json_encode($bodyData);
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/adminuser/update";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
+
+        $decodedResp = json_decode($curlOutput);
+        if($decodedResp->status == 200){
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully updated']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
+        }
+
+    }
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteAdmin(Request $request)
+    {
+        if (AclHandler::hasAccess('User Creation','delete') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
+        $rules = [
+            'admin_id'        => 'required'
+        ];
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/adminuser/".intval($request->get('admin_id'));
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
+
+        $decodedData = json_decode($curlOutput);
+
+        return response()->json( ['responseCode'=>1,'message'=>'Successfully Deleted']);
+
+
+    }
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\shop  $shop
+     * @return \Illuminate\Http\Response
+     */
+    public function show(shop $shop)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\shop  $shop
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(shop $shop)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\shop  $shop
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, shop $shop)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\shop  $shop
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(shop $shop)
+    {
+        //
+    }
+}

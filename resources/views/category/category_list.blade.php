@@ -47,9 +47,11 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-md-2">
+                                        @if(App\Libraries\AclHandler::hasAccess('Category','add') == true)
                                         <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#add-modal-lg">
                                             Add Category
                                         </button>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -135,27 +137,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="edit_response_msg_area"></div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Parent Category</label>
-                        <select name="edit_parent_category" class="form-control edit_parent_category">
-                            <option value="">Please select parent</option>
-                            @foreach($categories as $category)
-                                <option value="{{$category->id}}">{{$category->name}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Category Name</label>
-                        <input name="edit_category_name" type="text" class="form-control edit_category_name" placeholder="Enter Category Name">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Description</label>
-                        <textarea name="edit_description" class="form-control edit_description"></textarea>
-                    </div>
+                    <div class="edit_data_content"></div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary update_new_category"> <span class="spinner-icon"></span> Update </button>
+                    <button type="button" class="btn btn-primary update_category"> <span class="spinner-icon"></span> Update </button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -182,6 +168,7 @@
                     iDisplayLength: 25,
                     processing: true,
                     serverSide: true,
+                    lengthChange: false,
                     searching: true,
                     ajax: {
                         headers: {
@@ -286,11 +273,7 @@
                     success: function (response) {
                         btn.prop('disabled', false);
                         if(response.responseCode == 1){
-                            // $('.edit_shop_name').val(response.data.name);
-                            // $('.edit_shop_description').val(response.data.name);
-                            // $('.edit_shop_address').val(response.data.name);
-                            // $('.shop_id').val(response.data.name);
-
+                            $('.edit_data_content').html(response.html);
                             $('#edit-modal-lg').modal();
                         }else{
 
@@ -300,6 +283,70 @@
 
             });
 
+
+            $(document).on('click', '.update_category', function () {
+                $('.add_response_msg_area').empty();
+                var category_id = $('.edit_category_id').val();
+                var category_name = $('.edit_category_name').val();
+                var description = $('.edit_description').val();
+                var parent_category = $('.edit_parent_category').val();
+
+                if (category_name == '') {
+                    alert("please insert category name");
+                    return false;
+                }
+                if (description == '') {
+                    alert("please insert description");
+                    return false;
+                }
+
+                var btn = $(this);
+                btn.prop('disabled', true);
+                $('.spinner-icon').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+
+                $.ajax({
+                    url: '{{ url('/category/update-category') }}',
+                    type: "POST",
+                    //dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: {
+                        category_id: category_id,
+                        category_name: category_name,
+                        description: description,
+                        parent_category: parent_category
+                    },
+                    success: function (response) {
+                        btn.prop('disabled', false);
+                        $('.spinner-icon').empty();
+
+                        if (response.responseCode == 1) {
+                            $('.edit_response_msg_area').html('<div class="alert alert-success">\n' +
+                                '                                <strong>Success!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+
+                            $('.alert-success').fadeOut(3000);
+
+                            setTimeout(function () {
+                                $('#edit-modal-lg').modal('hide');
+                            }, 3200);
+
+                            var dataTable = $('#category_list').dataTable();
+                            dataTable.fnDestroy();
+                            getCategoryList();
+
+                        } else {
+                            $('.edit_response_msg_area').html('<div class="alert alert-danger">\n' +
+                                '                                <strong>Error!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+
+                    }
+                });
+            });
 
             $(document).on('click', '.deleteCategory', function () {
 

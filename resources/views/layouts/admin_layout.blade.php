@@ -12,6 +12,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     @section('styles')
     @show
     <!-- Google Font: Source Sans Pro -->
+
+    <style>
+        .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
+            background-color: #17a2b8 !important;
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -23,37 +29,37 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="index3.html" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="#" class="nav-link">Contact</a>
-            </li>
+{{--            <li class="nav-item d-none d-sm-inline-block">--}}
+{{--                <a href="index3.html" class="nav-link">Home</a>--}}
+{{--            </li>--}}
+{{--            <li class="nav-item d-none d-sm-inline-block">--}}
+{{--                <a href="#" class="nav-link">Contact</a>--}}
+{{--            </li>--}}
         </ul>
 
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
             <!-- Navbar Search -->
-            <li class="nav-item">
-                <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                    <i class="fas fa-search"></i>
-                </a>
-                <div class="navbar-search-block">
-                    <form class="form-inline">
-                        <div class="input-group input-group-sm">
-                            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-                            <div class="input-group-append">
-                                <button class="btn btn-navbar" type="submit">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </li>
+{{--            <li class="nav-item">--}}
+{{--                <a class="nav-link" data-widget="navbar-search" href="#" role="button">--}}
+{{--                    <i class="fas fa-search"></i>--}}
+{{--                </a>--}}
+{{--                <div class="navbar-search-block">--}}
+{{--                    <form class="form-inline">--}}
+{{--                        <div class="input-group input-group-sm">--}}
+{{--                            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">--}}
+{{--                            <div class="input-group-append">--}}
+{{--                                <button class="btn btn-navbar" type="submit">--}}
+{{--                                    <i class="fas fa-search"></i>--}}
+{{--                                </button>--}}
+{{--                                <button class="btn btn-navbar" type="button" data-widget="navbar-search">--}}
+{{--                                    <i class="fas fa-times"></i>--}}
+{{--                                </button>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </form>--}}
+{{--                </div>--}}
+{{--            </li>--}}
 
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item dropdown">
@@ -93,17 +99,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <i class="far fa-user"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"> Logout
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                {{ csrf_field() }}
-                            </form>
-                        </a>
+{{--                    <a href="#" class="dropdown-item dropdown-footer">Profile</a>--}}
+                    <a href="#" class="">
+                        <a href="#" class="dropdown-item" style="width: 100%;text-align: center;"> <i class="fas fa-user"></i> Profile </a>
                     </a>
                     <div class="dropdown-divider"></div>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item dropdown-footer">Profile</a>
+                    <a href="#" class="">
+                        {{--                        <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"> Logout--}}
+                        {{--                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">--}}
+                        {{--                                {{ csrf_field() }}--}}
+                        {{--                            </form>--}}
+                        {{--                        </a>--}}
+                        <a href="{{url('/apiBasedLogOut')}}" class="dropdown-item" style="width: 100%;text-align: center;"> <i class="fas fa-power-off"></i> Log Out</a>
+                    </a>
                 </div>
             </li>
         </ul>
@@ -126,21 +134,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
 {{--                    <img src="{{asset('admin_src/img/profile/profile.png')}}d" class="img-circle elevation-2" alt="User Image">--}}
                 </div>
                 <div class="info">
-                    <a href="#" class="d-block">Alexander Pierce</a>
+                    <a href="#" class="d-block">{{App\Libraries\AclHandler::getUserName()}}</a>
                 </div>
             </div>
 
             <!-- SidebarSearch Form -->
-            <div class="form-inline">
-                <div class="input-group" data-widget="sidebar-search">
-                    <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-                    <div class="input-group-append">
-                        <button class="btn btn-sidebar">
-                            <i class="fas fa-search fa-fw"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+{{--            <div class="form-inline">--}}
+{{--                <div class="input-group" data-widget="sidebar-search">--}}
+{{--                    <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">--}}
+{{--                    <div class="input-group-append">--}}
+{{--                        <button class="btn btn-sidebar">--}}
+{{--                            <i class="fas fa-search fa-fw"></i>--}}
+{{--                        </button>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
 
             <!-- Sidebar Menu -->
             <nav class="mt-2">
@@ -148,37 +156,88 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->
                     <li class="nav-item menu-open">
-                        <a href="#" class="nav-link {{ (Request::is('/home') ? 'active' : '') }}">
+                        <a href="#" class=" {{ (Request::is('/home') ? 'active' : '') }}">
                             <a href="{{url('/home')}}" class="nav-link">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p>Dashboard</p>
                             </a>
                         </a>
                     </li>
+
+                    <div class="user-panel mt-1 pb-1 mb-2 d-flex"> </div>
+                    <li class="nav-item">
+                        <a href="{{url('/order/list')}}" class="nav-link {{ (Request::is('order/*') ? 'active' : '') }}">
+                            <i class="nav-icon fas fa-shopping-cart"></i>
+                            <p>Orders</p>
+                        </a>
+                    </li>
+                    <div class="user-panel mt-1 pb-1 mb-1 d-flex"> </div>
+                    @if(App\Libraries\AclHandler::hasAccess('Location','full') == true)
+                        <li class="nav-item">
+                            <a href="{{url('/location/list')}}" class="nav-link {{ (Request::is('location/*') ? 'active' : '') }}">
+                                <i class="nav-icon fas fa-map-marker"></i>
+                                <p>Location</p>
+                            </a>
+                        </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('Shop','full') == true)
                     <li class="nav-item">
                         <a href="{{url('/shop/shop-list')}}" class="nav-link {{ (Request::is('shop/*') ? 'active' : '') }}">
-                            <i class="nav-icon fas fa-book"></i>
+                            <i class="nav-icon fas  fa-home"></i>
                             <p>Shops</p>
                         </a>
                     </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('User Creation','full') == true)
+                        <li class="nav-item">
+                            <a href="{{url('/admin-user/list')}}" class="nav-link {{ (Request::is('admin-user/*') ? 'active' : '') }}">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>Admin User</p>
+                            </a>
+                        </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('Brand','full') == true)
                     <li class="nav-item">
                         <a href="{{url('/brand/brand-list')}}" class="nav-link {{ (Request::is('brand/*') ? 'active' : '') }}">
-                            <i class="nav-icon fas fa-book"></i>
+                            <i class="nav-icon fas fa-tags"></i>
                             <p>Brand</p>
                         </a>
                     </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('Category','full') == true)
                     <li class="nav-item">
                         <a href="{{url('/category/category-list')}}" class="nav-link {{ (Request::is('category/*') ? 'active' : '') }}">
-                            <i class="nav-icon fas fa-book"></i>
+                            <i class="nav-icon fas fa-list"></i>
                             <p>Category</p>
                         </a>
                     </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('Product Var Type','full') == true)
                     <li class="nav-item">
-                        <a href="{{url('/item/item-list')}}" class="nav-link {{ (Request::is('item/*') ? 'active' : '') }}">
-                            <i class="nav-icon fas fa-book"></i>
-                            <p>Item</p>
+                        <a href="{{url('/product-var-type/list')}}" class="nav-link {{ (Request::is('product-var-type/*') ? 'active' : '') }}">
+                            <i class="nav-icon fas fa-align-center"></i>
+                            <p>Product Variation</p>
                         </a>
                     </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('Product','full') == true)
+                        <li class="nav-item">
+                            <a href="{{url('/item/item-list')}}" class="nav-link {{ (Request::is('item/*') ? 'active' : '') }}">
+                                <i class="nav-icon fas fa-cubes"></i>
+                                <p>Product</p>
+                            </a>
+                        </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('City','full') == true)
+                    <li class="nav-item">
+                        <a href="{{url('/city/list')}}" class="nav-link {{ (Request::is('city/*') ? 'active' : '') }}">
+                            <i class="nav-icon fas fa-map-pin"></i>
+                            <p>City</p>
+                        </a>
+                    </li>
+                    @endif
+
+
 
 {{--                    <li class="nav-item {{ (Request::is('/item/*') ? 'active' : '') }}">--}}
 {{--                        <a href="#" class="nav-link">--}}

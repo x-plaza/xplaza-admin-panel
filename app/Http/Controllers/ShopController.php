@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Libraries\AclHandler;
 use App\Libraries\HandleApi;
 use App\shop;
 use Illuminate\Http\Request;
@@ -24,6 +25,10 @@ class ShopController extends Controller
 
     public function shopList()
     {
+        if (AclHandler::hasAccess('Shop','full') == false){
+            die('Not access . Recorded this '); exit();
+        }
+
         $api_url = "https://xplaza-backend.herokuapp.com/api/location";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
@@ -43,9 +48,13 @@ class ShopController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs open_shop_modal" data-shop_id="'.$data->id.'" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
-                $action .= ' <button type="button" class="btn btn-danger btn-xs deleteShop" data-shop_id="'.$data->id.'"><b><i class="fa fa-trash"></i> Delete</b></button>';
-
+                $action = '';
+                if (AclHandler::hasAccess('Shop','update') == true){
+                    $action = '<button type="button" class="btn btn-info btn-xs open_shop_modal" data-shop_id="'.$data->id.'" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
+                }
+                if (AclHandler::hasAccess('Shop','delete') == true) {
+                    $action .= ' <button type="button" class="btn btn-danger btn-xs deleteShop" data-shop_id="' . $data->id . '"><b><i class="fa fa-trash"></i> Delete</b></button>';
+                }
                 return $action;
             })
             ->removeColumn('id')
@@ -70,6 +79,10 @@ class ShopController extends Controller
      */
     public function store(Request $request)
     {
+        if (AclHandler::hasAccess('Shop','add') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
         $rules = [
             'shop_name'        => 'required',
             'shop_description' => 'required',
@@ -97,9 +110,12 @@ class ShopController extends Controller
         $api_url = "https://xplaza-backend.herokuapp.com/api/shop/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
-        return response()->json( ['responseCode'=>1,'message'=>'Successfully added']);
-
-
+        $decodedResp = json_decode($curlOutput);
+        if($decodedResp->status == 201){
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully added']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
+        }
     }
 
     /**
@@ -119,26 +135,82 @@ class ShopController extends Controller
 
         $shop_id = $request->get('shop_id');
 
-        $bodyData = [
-            "shop_id"=>$shop_id
-        ];
-        $fieldData = json_encode($bodyData);
+        $api_url = "https://xplaza-backend.herokuapp.com/api/location";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $json_resp = json_decode($curlOutput);
+        $locations = isset($json_resp->data) ? $json_resp->data : [];
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/shop/add";
-      //  $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
+        $api_url = "https://xplaza-backend.herokuapp.com/api/shop/".intval($shop_id);
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $decodedData = json_decode($curlOutput);
+        $shop_data = isset($decodedData->data) ? $decodedData->data : [];
 
-        return response()->json( ['responseCode'=>1,'message'=>'Successfully fetches']);
+        $public_html = strval(view("shop.modal_data", compact('shop_data','locations')));
+
+        return response()->json(['responseCode' => 1, 'html' => $public_html, 'shop_id'=>$shop_id,'message'=>'Successfully fetches']);
 
 
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
 
+    public function updateShop(Request $request)
+    {
+        if (AclHandler::hasAccess('Shop','update') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
+        $rules = [
+            'edit_shop_id'     => 'required',
+            'edit_location_id' => 'required',
+            'edit_shop_name'     => 'required',
+            'edit_shop_description'      => 'required',
+            'edit_shop_address'      => 'required'
+        ];
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $shop_id = $request->get('edit_shop_id');
+        $shop_name = $request->get('edit_shop_name');
+        $shop_description = $request->get('edit_shop_description');
+        $shop_address = $request->get('edit_shop_address');
+        $location_id = $request->get('edit_location_id');
+
+        $bodyData = [
+            "name"=>$shop_name,
+            "description"=>$shop_description,
+            "id"=>$shop_id,
+            "address"=>$shop_address,
+            "location_id"=>$location_id
+        ];
+        $fieldData = json_encode($bodyData);
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/shop/update";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
+
+        $decodedResp = json_decode($curlOutput);
+        if($decodedResp->status == 200){
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully updated']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
+        }
+
+    }
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteShop(Request $request)
     {
+        if (AclHandler::hasAccess('Shop','delete') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
         $rules = [
             'shop_id'        => 'required'
         ];

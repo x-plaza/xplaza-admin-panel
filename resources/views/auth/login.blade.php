@@ -22,7 +22,9 @@
         <div class="card-body">
             <p class="login-box-msg">Sign in to start your session</p>
 
-            <form action="{{ route('login') }}" method="post" aria-label="{{ __('Login') }}">
+            {!! Session::has('error') ? '<div class="alert alert-danger alert-dismissible"><button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>'. Session::get("error") .'</div>' : '' !!}
+
+            <form action="{{ url('apiBasedLogin') }}" method="post">
                 {{csrf_field()}}
                 <div class="input-group mb-3">
                     <input type="email" name="email" class="form-control" placeholder="Email">

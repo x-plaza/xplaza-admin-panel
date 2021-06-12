@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -34,6 +35,13 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+//        $this->middleware(function ($request, $next) {
+//            $isAuthenticated = session::get('authenticated');
+//            if(isset($isAuthenticated) && $isAuthenticated == 'true'){
+//                return redirect('/home');
+//            }
+//        });
+
         $this->middleware('guest')->except('logout');
     }
 }

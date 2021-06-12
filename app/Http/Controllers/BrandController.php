@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\brand;
+use App\Libraries\AclHandler;
 use App\Libraries\HandleApi;
 use App\shop;
 use Illuminate\Http\Request;
@@ -24,6 +25,10 @@ class BrandController extends Controller
 
     public function brandList()
     {
+        if (AclHandler::hasAccess('Brand','full') == false){
+            die('Not access . Recorded this '); exit();
+        }
+
         return view('brand.brand_list');
     }
 
@@ -38,9 +43,13 @@ class BrandController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs open_brand_modal" data-brand_id="'.$data->id.'" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
-                $action .= ' <button type="button" class="btn btn-danger btn-xs deleteBrand" data-brand_id="'.$data->id.'"><b><i class="fa fa-trash"></i> Delete</b></button>';
-
+                $action = '';
+                if (AclHandler::hasAccess('Brand','update') == true) {
+                    $action = '<button type="button" class="btn btn-info btn-xs open_brand_modal" data-brand_id="' . $data->id . '" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
+                }
+                if (AclHandler::hasAccess('Brand','delete') == true) {
+                    $action .= ' <button type="button" class="btn btn-danger btn-xs deleteBrand" data-brand_id="' . $data->id . '"><b><i class="fa fa-trash"></i> Delete</b></button>';
+                }
                 return $action;
             })
             ->removeColumn('id')
@@ -65,6 +74,10 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
+        if (AclHandler::hasAccess('Brand','add') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
         $rules = [
             'brand_name'  => 'required',
             'description' => 'required'
@@ -86,8 +99,56 @@ class BrandController extends Controller
         $api_url = "https://xplaza-backend.herokuapp.com/api/brand/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
-        return response()->json( ['responseCode'=>1,'message'=>'Successfully added']);
+        $decodedResp = json_decode($curlOutput);
+        if($decodedResp->status == 201){
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully added']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
+        }
 
+    }
+
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateBrand(Request $request)
+    {
+        if (AclHandler::hasAccess('Brand','update') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
+        $rules = [
+            'brand_id'  => 'required',
+            'brand_name'  => 'required',
+            'description' => 'required'
+        ];
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $brand_id = $request->get('brand_id');
+        $brand_name = $request->get('brand_name');
+        $description = $request->get('description');
+
+        $bodyData = [
+            "name"=>$brand_name,
+            "id"=>$brand_id,
+            "description"=>$description
+        ];
+        $fieldData = json_encode($bodyData);
+
+        $api_url = "https://xplaza-backend.herokuapp.com/api/brand/update";
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
+
+        $decodedResp = json_decode($curlOutput);
+        if($decodedResp->status == 200){
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully updated']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
+        }
 
     }
 
@@ -108,15 +169,15 @@ class BrandController extends Controller
 
         $brand_id = $request->get('brand_id');
 
-        $bodyData = [
-            "brand_id"=>$brand_id
-        ];
-        $fieldData = json_encode($bodyData);
+        $api_url = "https://xplaza-backend.herokuapp.com/api/brand/".intval($brand_id);
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $decodedData = json_decode($curlOutput);
+        $brand_data = isset($decodedData->data) ? $decodedData->data : [];
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/shop/add";
-        //  $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
+        $public_html = strval(view("brand.modal_data", compact('brand_data')));
 
-        return response()->json( ['responseCode'=>1,'message'=>'Successfully fetches']);
+        return response()->json(['responseCode' => 1, 'html' => $public_html, 'message'=>'Successfully fetches']);
+
 
 
     }
@@ -128,6 +189,10 @@ class BrandController extends Controller
      */
     public function deleteBrand(Request $request)
     {
+        if (AclHandler::hasAccess('Brand','delete') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
         $rules = [
             'brand_id'        => 'required'
         ];
