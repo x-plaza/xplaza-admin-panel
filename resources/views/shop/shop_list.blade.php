@@ -66,7 +66,7 @@
                                         <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Description</th>
+                                            <th>Owner</th>
                                             <th>Address</th>
                                             <th>Location</th>
                                             <th>Action</th>
@@ -114,8 +114,8 @@
                         <input name="shop_name" type="text" class="form-control shop_name" placeholder="Enter Shop Name">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Description</label>
-                        <textarea name="shop_description" class="form-control shop_description"></textarea>
+                        <label for="exampleInputEmail1">Owner</label>
+                        <input name="owner" type="text" class="form-control owner" placeholder="Enter owner Name">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Address</label>
@@ -187,10 +187,10 @@
                         method: 'post'
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
-                        {data: 'description', name: 'description', searchable: true},
-                        {data: 'address', name: 'address', searchable: true},
-                        {data: 'location_name', name: 'location_name', searchable: true},
+                        {data: 'name', name: 'name', searchable: true,orderable: false},
+                        {data: 'owner', name: 'owner', searchable: true,orderable: false},
+                        {data: 'address', name: 'address', searchable: true,orderable: false},
+                        {data: 'location_name', name: 'location_name', searchable: true,orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
                     "aaSorting": []
@@ -202,7 +202,7 @@
             $(document).on('click', '.store_new_shop', function () {
                 $('.add_response_msg_area').empty();
                 var shop_name = $('.shop_name').val();
-                var shop_description = $('.shop_description').val();
+                var owner = $('.owner').val();
                 var shop_address = $('.shop_address').val();
                 var location_id = $('.location_id').val();
 
@@ -214,8 +214,8 @@
                     alert("please insert shop name");
                     return false;
                 }
-                if (shop_description == '') {
-                    alert("please insert shop description");
+                if (owner == '') {
+                    alert("please insert shop owner");
                     return false;
                 }
                 if (shop_address == '') {
@@ -236,7 +236,7 @@
                     },
                     data: {
                         shop_name: shop_name,
-                        shop_description: shop_description,
+                        owner: owner,
                         shop_address: shop_address,
                         location_id: location_id
                     },
@@ -251,7 +251,7 @@
 
 
                             $('.shop_name').val('');
-                            $('.shop_description').val('');
+                            $('.owner').val('');
                             $('.shop_address').val('');
 
                             $('.alert-success').fadeOut(3000);
@@ -311,7 +311,7 @@
                 var edit_location_id = $('.edit_location_id').val();
                 var edit_shop_id = $('.edit_shop_id').val();
                 var edit_shop_name = $('.edit_shop_name').val();
-                var edit_shop_description = $('.edit_shop_description').val();
+                var edit_owner = $('.edit_owner').val();
                 var edit_shop_address = $('.edit_shop_address').val();
 
                 if (edit_location_id == '') {
@@ -322,8 +322,8 @@
                     alert("please insert shop name");
                     return false;
                 }
-                if (edit_shop_description == '') {
-                    alert("please insert shop description");
+                if (edit_owner == '') {
+                    alert("please insert shop owner");
                     return false;
                 }
                 if (edit_shop_address == '') {
@@ -346,7 +346,7 @@
                         edit_shop_id: edit_shop_id,
                         edit_location_id: edit_location_id,
                         edit_shop_name: edit_shop_name,
-                        edit_shop_description: edit_shop_description,
+                        edit_owner: edit_owner,
                         edit_shop_address: edit_shop_address
                     },
                     success: function (response) {

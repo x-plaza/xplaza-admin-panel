@@ -30,7 +30,7 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Loation</li>
+                            <li class="breadcrumb-item active">Location</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -178,8 +178,8 @@
                         method: 'post'
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
-                        {data: 'city_name', name: 'city_name', searchable: true},
+                        {data: 'name', name: 'name', searchable: true ,orderable: false},
+                        {data: 'city_name', name: 'city_name', searchable: true ,orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
                     "aaSorting": []

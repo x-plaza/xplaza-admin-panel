@@ -27,7 +27,7 @@ class cityController extends Controller
             die('Not access . Recorded this '); exit();
         }
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/state";
+        $api_url = env('API_BASE_URL')."/api/state";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
 
@@ -38,7 +38,7 @@ class cityController extends Controller
 
     public function getList()
     {
-        $api_url = "https://xplaza-backend.herokuapp.com/api/city";
+        $api_url = env('API_BASE_URL')."/api/city";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -101,7 +101,7 @@ class cityController extends Controller
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/city/add";
+        $api_url = env('API_BASE_URL')."/api/city/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -129,12 +129,12 @@ class cityController extends Controller
 
         $city_id = $request->get('city_id');
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/state";
+        $api_url = env('API_BASE_URL')."/api/state";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
         $states = isset($json_resp->data) ? $json_resp->data : [];
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/city/".intval($city_id);
+        $api_url = env('API_BASE_URL')."/api/city/".intval($city_id);
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedData = json_decode($curlOutput);
         $city_data = isset($decodedData->data) ? $decodedData->data : [];
@@ -178,7 +178,7 @@ class cityController extends Controller
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/city/update";
+        $api_url = env('API_BASE_URL')."/api/city/update";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -207,7 +207,7 @@ class cityController extends Controller
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/city/".intval($request->get('city_id'));
+        $api_url = env('API_BASE_URL')."/api/city/".intval($request->get('city_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
 
         $decodedData = json_decode($curlOutput);

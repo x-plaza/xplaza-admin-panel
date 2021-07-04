@@ -5,11 +5,9 @@
 
     <link rel="stylesheet" type="text/css" href="{{asset('admin_src/plugins/select2/css/select2.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('admin_src/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
-{{--    <link rel="stylesheet" type="text/css" href="{{asset('admin_src/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')}}">--}}
-
     <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/datatable/dataTables.bootstrap.min.css") }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/datatable/responsive.bootstrap.min.css") }}" />
-
+    <link rel="stylesheet" href="{{ asset("plugins/datepicker-oss/css/bootstrap-datetimepicker.min.css") }}" />
     <style>
         .paginate_button{
             margin-right: 10px;
@@ -51,7 +49,10 @@
                                         <a class="nav-link active pending-tab-content" id="pending-tab" data-toggle="pill" href="#tab-pending" role="tab" aria-controls="tab-pending" aria-selected="true">Pending</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link inprogress-tab-content" id="inprogress-tab" data-toggle="pill" href="#tab-inprogress" role="tab" aria-controls="tab-inprogress" aria-selected="false">In-Progress</a>
+                                        <a class="nav-link confirmed-tab-content" id="inprogress-tab" data-toggle="pill" href="#tab-confirmed" role="tab" aria-controls="tab-inprogress" aria-selected="false">confirmed</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link picked_for_delivery-tab-content" id="delivered-tab" data-toggle="pill" href="#tab-picked_for_delivery" role="tab" aria-controls="tab-picked_for_delivery" aria-selected="false">Picked For Delivery</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link delivered-tab-content" id="delivered-tab" data-toggle="pill" href="#tab-delivered" role="tab" aria-controls="tab-delivered" aria-selected="false">Delivered</a>
@@ -66,8 +67,11 @@
                                     <div class="tab-pane fade show active" id="tab-pending" role="tabpanel" aria-labelledby="pending-tab">
                                         @include('order.tab_pending')
                                     </div>
-                                    <div class="tab-pane fade" id="tab-inprogress" role="tabpanel" aria-labelledby="inprogress-tab">
-                                        @include('order.tab_inprogress')
+                                    <div class="tab-pane fade" id="tab-confirmed" role="tabpanel" aria-labelledby="confirmed-tab">
+                                        @include('order.tab_confirmed')
+                                    </div>
+                                    <div class="tab-pane fade" id="tab-picked_for_delivery" role="tabpanel" aria-labelledby="picked_for_delivery-tab">
+                                        @include('order.tab_picked_for_delivery')
                                     </div>
                                     <div class="tab-pane fade" id="tab-delivered" role="tabpanel" aria-labelledby="delivered-tab">
                                         @include('order.tab_delivered')
@@ -93,23 +97,24 @@
 
 
     <!-- Order Details Modal -->
-    <div class="modal fade" id="edit-modal-lg">
+    <div class="modal fade" id="pending-order-modal-lg">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-{{--                <div class="modal-header">--}}
-{{--                    <h4 class="modal-title">Edit Category</h4>--}}
-{{--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
-{{--                        <span aria-hidden="true">&times;</span>--}}
-{{--                    </button>--}}
-{{--                </div>--}}
-{{--                <div class="modal-body">--}}
-{{--                    <div class="edit_response_msg_area"></div>--}}
-{{--                    <div class="edit_data_content"></div>--}}
-{{--                </div>--}}
-{{--                <div class="modal-footer justify-content-between">--}}
-{{--                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>--}}
+                <div class="modal-header">
+                    <h4 class="modal-title">Order Details</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="pending_response_msg_area"></div>
+                    <div class="order_status_update_msg"></div>
+                    <div class="pending_order_details_data_content"></div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 {{--                    <button type="button" class="btn btn-primary update_category"> <span class="spinner-icon"></span> Update </button>--}}
-{{--                </div>--}}
+                </div>
             </div>
             <!-- /.modal-content -->
         </div>
@@ -120,9 +125,11 @@
 @section('scripts')
     @include('layouts.admin_common_js')
 
+    <script src="{{ asset("plugins/moment.min.js") }}"></script>
     <script src="{{ asset("admin_src/datatable/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset("admin_src/datatable/dataTables.responsive.min.js") }}"></script>
     <script src="{{ asset("admin_src/datatable/responsive.bootstrap.min.js") }}"></script>
+    <script src="{{ asset("plugins/datepicker-oss/js/bootstrap-datetimepicker.js") }}"></script>
 
     <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>"/>
 
@@ -130,7 +137,22 @@
 
         $(document).ready(function() {
 
+            var today = new Date();
+            var yyyy = today.getFullYear();
+
+            var calDate = new Date();
+            calDate.setDate( calDate.getDate() - 5 );
+
+            $('.pending_datepicker').datetimepicker({
+             //   viewMode: 'years',
+                format: 'DD-MM-YYYY',
+                maxDate: (new Date()),
+                minDate: calDate
+            });
+            $('.pending_datepicker').val('');
+
             function getPendingList() {
+                var date =$('.pending_datepicker').val();
                 $('#pending_order_list').DataTable({
                     iDisplayLength: 25,
                     processing: true,
@@ -142,12 +164,18 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
                         url: '{{url("/order/get-pending-order-list")}}',
-                        method: 'post'
+                        method: 'post',
+                        data: function (d) {
+                            d._token = $('input[name="_token"]').val();
+                            d.date = date;
+                        }
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
-                        {data: 'description', name: 'description', searchable: true},
-                        {data: 'action', name: 'action', orderable: false, searchable: false}
+                        {data: 'invoice_number', name: 'order_id', searchable: false, orderable: false},
+                        {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
+                        {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
+                        {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
                     ],
                     "aaSorting": []
                 });
@@ -155,9 +183,59 @@
 
             getPendingList();
 
+            $(document).on('click', '.pending_search', function () {
+                var dataTable = $('#pending_order_list').dataTable();
+                dataTable.fnDestroy();
+                getPendingList();
+            })
 
-            function getInProgressList() {
-                $('#in_progress_order_list').DataTable({
+            $(document).on('click', '.pending-tab-content', function () {
+                var dataTable = $('#pending_order_list').dataTable();
+                dataTable.fnDestroy();
+                getPendingList();
+            })
+
+            $(document).on('click', '.view_order_details', function () {
+
+                var order_id = jQuery(this).data('order_id');
+
+                var btn = $(this);
+                btn.prop('disabled', true);
+
+                $.ajax({
+                    type: "POST",
+                    //  dataType: "json",
+                    url: "{{url("/order/get-order-details")}}",
+                    data: {
+                        _token: $('input[name="_token"]').val(),
+                        order_id: order_id
+                    },
+                    success: function (response) {
+                        btn.prop('disabled', false);
+                        if(response.responseCode == 1){
+                            $('.pending_order_details_data_content').html(response.html);
+                            $('#pending-order-modal-lg').modal();
+                        }else{
+                            alert(response.message);
+                        }
+                    }
+                });
+
+            });
+
+            //*************** confirmed ***************************************
+
+            $('.confirmed_datepicker').datetimepicker({
+                //   viewMode: 'years',
+                format: 'DD-MM-YYYY',
+                maxDate: (new Date()),
+                minDate: calDate
+            });
+            $('.confirmed_datepicker').val('');
+
+            function getConfirmedList() {
+                var date =$('.confirmed_datepicker').val();
+                $('#confirmed_order_list').DataTable({
                     iDisplayLength: 25,
                     processing: true,
                     serverSide: true,
@@ -167,23 +245,72 @@
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        url: '{{url("/order/get-inprogress-list")}}',
-                        method: 'post'
+                        url: '{{url("/order/get-confirmed-list")}}',
+                        method: 'post',
+                        data: function (d) {
+                            d._token = $('input[name="_token"]').val();
+                            d.date = date;
+                        }
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
-                        {data: 'description', name: 'description', searchable: true},
-                        {data: 'action', name: 'action', orderable: false, searchable: false}
+                        {data: 'invoice_number', name: 'order_id', searchable: false, orderable: false},
+                        {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
+                        {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
+                        {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
                     ],
                     "aaSorting": []
                 });
             }
-            $(document).on('click', '.inprogress-tab-content', function () {
-                var dataTable = $('#in_progress_order_list').dataTable();
+            $(document).on('click', '.confirmed-tab-content', function () {
+                var dataTable = $('#confirmed_order_list').dataTable();
                 dataTable.fnDestroy();
-                getInProgressList();
+                getConfirmedList();
             })
 
+
+            //*************** picked_for_delivery ***************************************
+
+            $('.picked_for_delivery_datepicker').datetimepicker({
+                //   viewMode: 'years',
+                format: 'DD-MM-YYYY',
+                maxDate: (new Date()),
+                minDate: calDate
+            });
+            $('.picked_for_delivery_datepicker').val('');
+
+            function getPicked_for_deliveryList() {
+                $('#picked_for_delivery_order_list').DataTable({
+                    iDisplayLength: 25,
+                    processing: true,
+                    serverSide: true,
+                    lengthChange: false,
+                    searching: true,
+                    ajax: {
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        url: '{{url("/order/get-picked_for_delivery-list")}}',
+                        method: 'post'
+                    },
+                    columns: [
+                        {data: 'invoice_number', name: 'order_id', searchable: false, orderable: false},
+                        {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
+                        {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
+                        {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
+                    ],
+                    "aaSorting": []
+                });
+            }
+
+            $(document).on('click', '.picked_for_delivery-tab-content', function () {
+                var dataTable = $('#picked_for_delivery_order_list').dataTable();
+                dataTable.fnDestroy();
+                getPicked_for_deliveryList();
+            })
+
+            //*************** Delivered ***************************************
 
             function getInDeliveredList() {
                 $('#delivered_order_list').DataTable({
@@ -200,9 +327,11 @@
                         method: 'post'
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
-                        {data: 'description', name: 'description', searchable: true},
-                        {data: 'action', name: 'action', orderable: false, searchable: false}
+                        {data: 'invoice_number', name: 'order_id', searchable: false, orderable: false},
+                        {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
+                        {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
+                        {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
                     ],
                     "aaSorting": []
                 });
@@ -213,36 +342,66 @@
                 getInDeliveredList();
             })
 
+            //***********************************************************************
+
+            $(document).on('click', '.order_status_update', function () {
+                var status_id =$('.order_status_id').val();
+                var invoice_number =$('.invoice_number').val();
+                var current_status_id =$('.current_status_id').val();
+
+                var btn = $(this);
+                btn.prop('disabled', true);
+
+                $.ajax({
+                    type: "POST",
+                    //  dataType: "json",
+                    url: "{{url("/order/update-status")}}",
+                    data: {
+                        _token: $('input[name="_token"]').val(),
+                        status_id: status_id,
+                        invoice_number: invoice_number
+                    },
+                    success: function (response) {
+                        btn.prop('disabled', false);
+                        if(response.responseCode == 1){
+                            $('.order_status_update_msg').html('<div class="alert alert-success">\n' +
+                                '                                <strong>Success!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+
+                            setTimeout(function () {
+                                $('.order_status_update_msg').html('');
+                                $('#pending-order-modal-lg').modal('hide');
+                            }, 3200);
+
+                            if (current_status_id == 1){
+                                var dataTable = $('#pending_order_list').dataTable();
+                                dataTable.fnDestroy();
+                                getPendingList();
+                            }else if(current_status_id == 2){
+                                var dataTable = $('#confirmed_order_list').dataTable();
+                                dataTable.fnDestroy();
+                                getConfirmedList();
+                            }else if(current_status_id == 3){
+                                var dataTable = $('#picked_for_delivery_order_list').dataTable();
+                                dataTable.fnDestroy();
+                                getPicked_for_deliveryList();
+                            }else if(current_status_id == 5){
+                                var dataTable = $('#delivered_order_list').dataTable();
+                                dataTable.fnDestroy();
+                                getInDeliveredList();
+                            }else if(current_status_id == 6){
+
+                            }
 
 
-            {{--$(document).on('click', '.open_category_modal', function () {--}}
-
-            {{--    var category_id = jQuery(this).data('category_id');--}}
-
-            {{--    var btn = $(this);--}}
-            {{--    btn.prop('disabled', true);--}}
-
-            {{--    $.ajax({--}}
-            {{--        type: "POST",--}}
-            {{--        dataType: "json",--}}
-            {{--        url: "{{ url('/category/get-category-info') }}",--}}
-            {{--        data: {--}}
-            {{--            _token: $('input[name="_token"]').val(),--}}
-            {{--            category_id: category_id--}}
-            {{--        },--}}
-            {{--        success: function (response) {--}}
-            {{--            btn.prop('disabled', false);--}}
-            {{--            if(response.responseCode == 1){--}}
-            {{--                $('.edit_data_content').html(response.html);--}}
-            {{--                $('#edit-modal-lg').modal();--}}
-            {{--            }else{--}}
-
-            {{--            }--}}
-            {{--        }--}}
-            {{--    });--}}
-
-            {{--});--}}
-
+                        }else{
+                            $('.order_status_update_msg').html('<div class="alert alert-danger">\n' +
+                                '                                <strong>Success!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+                        }
+                    }
+                });
+            })
 
 
         });

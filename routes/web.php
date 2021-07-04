@@ -86,9 +86,20 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
 
     Route::get('/order/list', 'manageOrderController@index');
     Route::post('/order/get-pending-order-list', 'manageOrderController@getPendingList');
-    Route::post('/order/get-inprogress-list', 'manageOrderController@inprogressContent');
+    Route::post('/order/get-confirmed-list', 'manageOrderController@confirmedContent');
+    Route::post('/order/get-picked_for_delivery-list', 'manageOrderController@pickedForDeliveryContent');
     Route::post('/order/get-delivered-list', 'manageOrderController@deliveredContent');
+    Route::post('/order/get-order-details', 'manageOrderController@orderDetails');
+    Route::post('/order/update-status', 'manageOrderController@updateStatus');
 
 
+    Route::get('/coupon/list', 'couponController@couponList');
+    Route::post('/coupon/get-list', 'couponController@getList');
+    Route::post('/coupon/add-new-coupon', 'couponController@store');
+    Route::post('/coupon/get-coupon-info', 'couponController@couponInfo');
+    Route::post('/coupon/delete-coupon', 'couponController@deleteCoupon');
+    Route::post('/coupon/update-coupon', 'couponController@updateCoupon');
+
+    Route::get('/user/profile', 'usersController@index');
 });
 

@@ -7,6 +7,7 @@ use App\Libraries\HandleApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Session;
 
 class manageOrderController extends Controller
 {
@@ -20,9 +21,15 @@ class manageOrderController extends Controller
     }
 
 
-    public function getPendingList()
+    public function getPendingList(Request $request)
     {
-        $api_url = "https://xplaza-backend.herokuapp.com/api/category";
+        $date = $request->get('date');
+        if (isset($date)){
+            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Pending&user_id=".Session::get('userId');
+        }else{
+            $api_url = env('API_BASE_URL')."/api/order/?status=Pending&user_id=".Session::get('userId');
+        }
+
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -30,18 +37,80 @@ class manageOrderController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs view_pending_order_details" data-category_id="' . $data->id . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
-            ->removeColumn('id')
+           // ->removeColumn('id')
             ->rawColumns(['action'])
             ->make(true);
     }
 
-
-    public function inprogressContent(Request $request)
+    public function orderDetails(Request $request)
     {
-        $api_url = "https://xplaza-backend.herokuapp.com/api/category";
+        $rules = [
+            'order_id'        => 'required'
+        ];
+
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $order_id = $request->get('order_id');
+
+        $api_url = env('API_BASE_URL')."/api/order/".intval($order_id);
+        $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $decodedDataForOrderDetails = json_decode($curlOutputMain);
+        $orderDetailsData = $decodedDataForOrderDetails->data;
+         //  dd($orderDetailsData);
+        if ( !isset($orderDetailsData) ) {
+            return response()->json( ['responseCode'=>0,'message'=>'No data found']);
+        }
+
+        $public_html = strval(view("order.modal_data_pending_details", compact('orderDetailsData')));
+
+        return response()->json(['responseCode' => 1, 'html' => $public_html,'message'=>'Successfully fetches']);
+
+    }
+
+
+    public function updateStatus(Request $request)
+    {
+        $rules = [
+            'status_id'        => 'required',
+            'invoice_number'        => 'required',
+        ];
+
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $status_id = $request->get('status_id');
+        $invoice_number = $request->get('invoice_number');
+
+        $api_url = env('API_BASE_URL')."/api/order/status-update?invoice_number=".intval($invoice_number)."&status=".intval($status_id);
+        $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'PUT', [] );
+        $decodedDataForOrderDetails = json_decode($curlOutputMain);
+        if ( isset($decodedDataForOrderDetails->status) && $decodedDataForOrderDetails->status == 200 ) {
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully updated status']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>'Not updated status']);
+        }
+
+    }
+
+
+    public function confirmedContent(Request $request)
+    {
+
+        $date = $request->get('date');
+        if (isset($date)){
+            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Confirmed&user_id=".Session::get('userId');
+        }else{
+            $api_url = env('API_BASE_URL')."/api/order/?status=Confirmed&user_id=".Session::get('userId');
+        }
+
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -49,10 +118,35 @@ class manageOrderController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs view_pending_order_details" data-category_id="' . $data->id . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
-            ->removeColumn('id')
+          //  ->removeColumn('id')
+            ->rawColumns(['action'])
+            ->make(true);
+
+    }
+
+    public function pickedForDeliveryContent(Request $request)
+    {
+        $date = $request->get('date');
+        if (isset($date)){
+            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Picked_for_delivery&user_id=".Session::get('userId');
+        }else{
+            $api_url = env('API_BASE_URL')."/api/order/?status=Picked_for_delivery&user_id=".Session::get('userId');
+        }
+
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+
+        $decodedData = json_decode($curlOutput);
+        $data = $decodedData->data;
+
+        return Datatables::of(collect($data))
+            ->addColumn('action', function ($data) {
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                return $action;
+            })
+            //  ->removeColumn('id')
             ->rawColumns(['action'])
             ->make(true);
 
@@ -62,7 +156,13 @@ class manageOrderController extends Controller
     public function deliveredContent(Request $request)
     {
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/category";
+        $date = $request->get('date');
+        if (isset($date)){
+            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Delivered&user_id=".Session::get('userId');
+        }else{
+            $api_url = env('API_BASE_URL')."/api/order/?status=Delivered&user_id=".Session::get('userId');
+        }
+
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -70,10 +170,10 @@ class manageOrderController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs view_pending_order_details" data-category_id="' . $data->id . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
-            ->removeColumn('id')
+          //  ->removeColumn('id')
             ->rawColumns(['action'])
             ->make(true);
 

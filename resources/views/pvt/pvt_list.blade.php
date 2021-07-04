@@ -172,8 +172,8 @@
                         method: 'post'
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
-                        {data: 'description', name: 'description', searchable: true},
+                        {data: 'name', name: 'name', searchable: true,orderable: false},
+                        {data: 'description', name: 'description', searchable: true,orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
                     "aaSorting": []

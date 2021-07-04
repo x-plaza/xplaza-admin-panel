@@ -67,7 +67,6 @@
                                         <tr>
                                             <th>Name</th>
                                             <th>Role</th>
-                                            <th>Shop</th>
                                             <th>Action</th>
                                         </tr>
                                         </thead>
@@ -195,9 +194,8 @@
                         method: 'post'
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
-                        {data: 'role_name', name: 'role_name', searchable: true},
-                        {data: 'shop_name', name: 'shop_name', searchable: true},
+                        {data: 'user_name', name: 'name', searchable: true,orderable: false},
+                        {data: 'role_name', name: 'role_name', searchable: true,orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
                     "aaSorting": []

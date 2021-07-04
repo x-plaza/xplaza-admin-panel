@@ -55,9 +55,13 @@ class apiAuthenticationsController extends Controller
             if(!isset($decodedResp->data->authentication)) {return redirect()->back()->with('error', "Opps! Something wrong");}
 
             if($decodedResp->data->authentication == true){
+                $shopList = isset($decodedResp->data->shopList)? $decodedResp->data->shopList : [];
+                $userId = isset($decodedResp->data->id)? $decodedResp->data->id : '';
                 Session::put('authenticated', 'true');
                 Session::put('authData', $decodedResp->data->authData);
                 Session::put('permissions', $decodedResp->data->permissions);
+                Session::put('shopList', $shopList);
+                Session::put('userId', $userId);
                 return redirect('/home');
             }else{
                 return redirect()->back()->with('error', "Sorry! Invalid Credentials");
@@ -67,6 +71,8 @@ class apiAuthenticationsController extends Controller
             Session::forget('authenticated');
             Session::forget('authData');
             Session::forget('permissions');
+            Session::forget('shopList');
+            Session::forget('userId');
             return redirect()->back()->with('error', "Something wrong");
         }
     }
@@ -78,6 +84,8 @@ class apiAuthenticationsController extends Controller
         Session::forget('authenticated');
         Session::forget('authData');
         Session::forget('permissions');
+        Session::forget('shopList');
+        Session::forget('userId');
         return redirect('/login');
     }
 

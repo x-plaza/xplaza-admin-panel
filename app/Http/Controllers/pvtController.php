@@ -33,7 +33,7 @@ class pvtController extends Controller
             die('Not access . Recorded this '); exit();
         }
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/prodvartype";
+        $api_url = env('API_BASE_URL')."/api/prodvartype";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -94,7 +94,7 @@ class pvtController extends Controller
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/prodvartype/add";
+        $api_url = env('API_BASE_URL')."/api/prodvartype/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -122,7 +122,7 @@ class pvtController extends Controller
 
         $pvt_id = $request->get('pvt_id');
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/prodvartype/".intval($pvt_id);
+        $api_url = env('API_BASE_URL')."/api/prodvartype/".intval($pvt_id);
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
         $pvt_info = isset($json_resp->data) ? $json_resp->data : [];
@@ -166,7 +166,7 @@ class pvtController extends Controller
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/prodvartype/update";
+        $api_url = env('API_BASE_URL')."/api/prodvartype/update";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -195,7 +195,7 @@ class pvtController extends Controller
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/prodvartype/".intval($request->get('pvt_id'));
+        $api_url = env('API_BASE_URL')."/api/prodvartype/".intval($request->get('pvt_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
 
         $decodedData = json_decode($curlOutput);
