@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\category;
 use App\Libraries\AclHandler;
-use App\Libraries\Encryption;
 use App\Libraries\HandleApi;
 use App\shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 
-class CategoryController extends Controller
+class couponController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,29 +21,29 @@ class CategoryController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function categoryList()
+    public function couponList()
     {
-        if (AclHandler::hasAccess('Category','full') == false){
+        if (AclHandler::hasAccess('Coupon','full') == false){
             die('Not access . Recorded this '); exit();
         }
 
-        $api_url = env('API_BASE_URL')."/api/category";
-        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
-        $json_resp = json_decode($curlOutput);
+        $api_url_discount_type = env('API_BASE_URL')."/api/discount-type";
+        $curlOutput_discount_type  = HandleApi::getCURLOutput( $api_url_discount_type, 'GET', [] );
+        $json_resp_discount_type = json_decode($curlOutput_discount_type);
+        $discount_type = isset($json_resp_discount_type->data) ? $json_resp_discount_type->data : [];
 
-        $categories = isset($json_resp->data) ? $json_resp->data : [];
-        return view('category.category_list',compact('categories'));
+        $api_url_currency_id = env('API_BASE_URL')."/api/currency";
+        $curlOutput_currency_id  = HandleApi::getCURLOutput( $api_url_currency_id, 'GET', [] );
+        $json_resp_currency_id = json_decode($curlOutput_currency_id);
+        $currency_id = isset($json_resp_currency_id->data) ? $json_resp_currency_id->data : [];
+
+        return view('coupon.coupon_list',compact('discount_type','currency_id'));
     }
 
 
     public function getList()
     {
-        $api_url = env('API_BASE_URL')."/api/category";
+        $api_url = env('API_BASE_URL')."/api/coupon";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -54,11 +52,11 @@ class CategoryController extends Controller
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
                 $action = '';
-                if (AclHandler::hasAccess('Category','update') == true) {
-                    $action = '<button type="button" class="btn btn-info btn-xs open_category_modal" data-category_id="' . $data->id . '" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
+                if (AclHandler::hasAccess('Coupon','update') == true) {
+                    $action = '<button type="button" class="btn btn-info btn-xs open_coupon_modal" data-coupon_id="' . $data->id . '" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
                 }
-                if (AclHandler::hasAccess('Category','delete') == true) {
-                    $action .= ' <button type="button" class="btn btn-danger btn-xs deleteCategory" data-category_id="' . $data->id . '"><b><i class="fa fa-trash"></i> Delete</b></button>';
+                if (AclHandler::hasAccess('Coupon','delete') == true){
+                    $action .= ' <button type="button" class="btn btn-danger btn-xs deleteCoupon" data-coupon_id="'.$data->id.'"><b><i class="fa fa-trash"></i> Delete</b></button>';
                 }
                 return $action;
             })
@@ -84,32 +82,40 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        if (AclHandler::hasAccess('Category','add') == false){
+        if (AclHandler::hasAccess('Coupon','add') == false){
             return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
         }
 
         $rules = [
-            'category_name'    => 'required',
-            'description'      => 'required'
+            'amount'        => 'required',
+            'coupon_code'        => 'required',
+            'currency'        => 'required',
+            'discount_type'        => 'required',
+            'start_date'        => 'required',
+            'end_date'        => 'required',
+            'is_active'        => 'required',
+            'max_amount' => 'required'
         ];
+
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $category_name = $request->get('category_name');
-        $description = $request->get('description');
-        $parent_category_id = $request->get('parent_category');
-        $parent_category = isset($parent_category_id) ? $parent_category_id : 0;
-
         $bodyData = [
-            "name"=>$category_name,
-            "description"=>$description,
-            "parent_category_id"=>$parent_category
+            "amount"=>$request->get('amount'),
+            "coupon_code"=>$request->get('coupon_code'),
+            "currency_id"=>$request->get('currency'),
+            "discount_type_id"=>$request->get('discount_type'),
+            "end_date"=>$request->get('end_date'),
+            "is_active"=>$request->get('is_active'),
+            "max_amount"=>$request->get('max_amount'),
+            "start_date"=>$request->get('start_date'),
+            "_active"=>true
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = env('API_BASE_URL')."/api/category/add";
+        $api_url = env('API_BASE_URL')."/api/coupon/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -118,8 +124,6 @@ class CategoryController extends Controller
         }else{
             return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
         }
-
-
     }
 
     /**
@@ -127,70 +131,84 @@ class CategoryController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function categoryInfo(Request $request)
+    public function couponInfo(Request $request)
     {
         $rules = [
-            'category_id'        => 'required'
+            'coupon_id'        => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $category_id = $request->get('category_id');
+        $coupon_id = $request->get('coupon_id');
 
-        $api_url = env('API_BASE_URL')."/api/category";
-        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
-        $json_resp = json_decode($curlOutput);
-        $categories = isset($json_resp->data) ? $json_resp->data : [];
+        $api_url_discount_type = env('API_BASE_URL')."/api/discount-type";
+        $curlOutput_discount_type  = HandleApi::getCURLOutput( $api_url_discount_type, 'GET', [] );
+        $json_resp_discount_type = json_decode($curlOutput_discount_type);
+        $discount_type = isset($json_resp_discount_type->data) ? $json_resp_discount_type->data : [];
 
-        $api_url = env('API_BASE_URL')."/api/category/".intval($category_id);
+        $api_url_currency_id = env('API_BASE_URL')."/api/currency";
+        $curlOutput_currency_id  = HandleApi::getCURLOutput( $api_url_currency_id, 'GET', [] );
+        $json_resp_currency_id = json_decode($curlOutput_currency_id);
+        $currency_id = isset($json_resp_currency_id->data) ? $json_resp_currency_id->data : [];
+
+        $api_url = env('API_BASE_URL')."/api/coupon/".intval($coupon_id);
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedData = json_decode($curlOutput);
-        $category_data = isset($decodedData->data) ? $decodedData->data : [];
+        $coupon_data = isset($decodedData->data) ? $decodedData->data : [];
 
-        $public_html = strval(view("category.modal_data", compact('category_data','categories')));
+        $public_html = strval(view("coupon.modal_data", compact('discount_type','currency_id','coupon_data')));
 
         return response()->json(['responseCode' => 1, 'html' => $public_html, 'message'=>'Successfully fetches']);
 
-    }
 
+    }
 
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateCategory(Request $request)
+
+    public function updateCoupon(Request $request)
     {
-        if (AclHandler::hasAccess('Category','update') == false){
+        if (AclHandler::hasAccess('Coupon','update') == false){
             return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
         }
 
         $rules = [
-            'category_id'    => 'required',
-            'category_name'    => 'required',
-            'description'      => 'required'
+            'coupon_id'     => 'required',
+            'amount'        => 'required',
+            'coupon_code'        => 'required',
+            'currency'        => 'required',
+            'discount_type'        => 'required',
+            'start_date'        => 'required',
+            'end_date'        => 'required',
+            'is_active'        => 'required',
+            'max_amount' => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $category_id = $request->get('category_id');
-        $category_name = $request->get('category_name');
-        $description = $request->get('description');
-        $parent_category_id = $request->get('parent_category');
-        $parent_category = isset($parent_category_id) ? $parent_category_id : 0;
+        $coupon_id = $request->get('coupon_id');
 
         $bodyData = [
-            "name"=>$category_name,
-            "description"=>$description,
-            "id"=>$category_id,
-            "parent_category_id"=>$parent_category
+            "amount"=>$request->get('amount'),
+            "coupon_code"=>$request->get('coupon_code'),
+            "currency_id"=>$request->get('currency'),
+            "discount_type_id"=>$request->get('discount_type'),
+            "end_date"=>$request->get('end_date'),
+            "is_active"=>$request->get('is_active'),
+            "max_amount"=>$request->get('max_amount'),
+            "start_date"=>$request->get('start_date'),
+            "_active"=>true,
+            "id"=>$coupon_id
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = env('API_BASE_URL')."/api/category/update";
+        $api_url = env('API_BASE_URL')."/api/coupon/update";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -201,26 +219,25 @@ class CategoryController extends Controller
         }
 
     }
-
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function deleteCategory(Request $request)
+    public function deleteCoupon(Request $request)
     {
-        if (AclHandler::hasAccess('Category','delete') == false){
+        if (AclHandler::hasAccess('Coupon','delete') == false){
             return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
         }
 
         $rules = [
-            'category_id'        => 'required'
+            'coupon_id'        => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $api_url = env('API_BASE_URL')."/api/category/".intval($request->get('category_id'));
+        $api_url = env('API_BASE_URL')."/api/coupon/".intval($request->get('coupon_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
 
         $decodedData = json_decode($curlOutput);

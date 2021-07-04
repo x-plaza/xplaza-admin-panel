@@ -9,6 +9,7 @@ use App\shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Session;
 use Intervention\Image\Facades\Image as Image;
 
 class ItemController extends Controller
@@ -38,27 +39,27 @@ class ItemController extends Controller
             die('Not access . Recorded this '); exit();
         }
 
-        $brand_api_url = "https://xplaza-backend.herokuapp.com/api/brand";
+        $brand_api_url = env('API_BASE_URL')."/api/brand";
         $brandCurlOutput  = HandleApi::getCURLOutput( $brand_api_url, 'GET', [] );
         $brand_json_resp = json_decode($brandCurlOutput);
         $brands = isset($brand_json_resp->data) ? $brand_json_resp->data : [];
 
-        $category_api_url = "https://xplaza-backend.herokuapp.com/api/category";
+        $category_api_url = env('API_BASE_URL')."/api/category";
         $categoryCurlOutput  = HandleApi::getCURLOutput( $category_api_url, 'GET', [] );
         $category_json_resp = json_decode($categoryCurlOutput);
         $categories = isset($category_json_resp->data) ? $category_json_resp->data : [];
 
-        $shop_api_url = "https://xplaza-backend.herokuapp.com/api/shop";
+        $shop_api_url = env('API_BASE_URL')."/api/shop?user_id=".Session::get('userId');
         $shopCurlOutput  = HandleApi::getCURLOutput( $shop_api_url, 'GET', [] );
         $shop_json_resp = json_decode($shopCurlOutput);
         $shops = isset($shop_json_resp->data) ? $shop_json_resp->data : [];
 
-        $shop_api_url = "https://xplaza-backend.herokuapp.com/api/currency";
+        $shop_api_url = env('API_BASE_URL')."/api/currency";
         $shopCurlOutput  = HandleApi::getCURLOutput( $shop_api_url, 'GET', [] );
         $shop_json_resp = json_decode($shopCurlOutput);
         $currencies = isset($shop_json_resp->data) ? $shop_json_resp->data : [];
 
-        $shop_api_url = "https://xplaza-backend.herokuapp.com/api/prodvartype";
+        $shop_api_url = env('API_BASE_URL')."/api/prodvartype";
         $shopCurlOutput  = HandleApi::getCURLOutput( $shop_api_url, 'GET', [] );
         $shop_json_resp = json_decode($shopCurlOutput);
         $prodvartypes = isset($shop_json_resp->data) ? $shop_json_resp->data : [];
@@ -69,11 +70,16 @@ class ItemController extends Controller
 
     public function getList()
     {
-        $api_url = "https://xplaza-backend.herokuapp.com/api/product";
+        $api_url = env('API_BASE_URL')."/api/product?user_id=".Session::get('userId');;
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
         $data = $decodedData->data;
+
+        $img_api_url = env('API_BASE_URL')."/api/productimage";
+        $img_curlOutput  = HandleApi::getCURLOutput( $img_api_url, 'GET', [] );
+        $img_decodedData = json_decode($img_curlOutput);
+        $img_data = $img_decodedData->data;
 
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
@@ -89,8 +95,18 @@ class ItemController extends Controller
                 }
                 return $action;
             })
+            ->editColumn('image', function ($data) use($img_data) {
+                $imageName = "";
+                foreach ($img_data as $img){
+                    if ($img->product_id == $data->id){
+                        $imageName =  $img->name;
+                        break;
+                    }
+                }
+                return "<center><img src='/item_image/".$imageName."' style='width: 180px; height: 70px;'></center>";
+            })
             ->removeColumn('id')
-            ->rawColumns(['action'])
+            ->rawColumns(['image','action'])
             ->make(true);
     }
 
@@ -127,7 +143,7 @@ class ItemController extends Controller
             'selling_price'    => 'required',
             'currency_id'    => 'required',
             'product_var_type_id'    => 'required',
-            'product_var_type_option'    => 'required'
+            'product_var_type_value'    => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
@@ -145,7 +161,7 @@ class ItemController extends Controller
         $selling_price = $request->get('selling_price');
         $currency_id = $request->get('currency_id');
         $product_var_type_id = $request->get('product_var_type_id');
-        $product_var_type_option = $request->get('product_var_type_option');
+        $product_var_type_value = $request->get('product_var_type_value');
 
         list($type, $data) = explode(';', $item_image);
         list(, $data) = explode(',', $data);
@@ -162,13 +178,13 @@ class ItemController extends Controller
             "description"=>$description,
             "name"=>$item_name,
             "product_var_type_id"=>$product_var_type_id,
-            "product_var_type_option"=>$product_var_type_option,
+            "product_var_type_value"=>$product_var_type_value,
             "selling_price"=>$selling_price,
             "shop_id"=>$shop_id
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/product/add";
+        $api_url = env('API_BASE_URL')."/api/product/add";
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
         $decodedResp = json_decode($curlOutputMain);
@@ -182,7 +198,7 @@ class ItemController extends Controller
                         "product_id"=>$numberOnly[0][0]
                     ];
                     $fieldData = json_encode($bodyData);
-                    $api_url = "https://xplaza-backend.herokuapp.com/api/productimage/add";
+                    $api_url = env('API_BASE_URL')."/api/productimage/add";
                     $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
                  //   dd($curlOutput);
                 }
@@ -217,42 +233,42 @@ class ItemController extends Controller
 
         $item_id = $request->get('item_id');
 
-        $brand_api_url = "https://xplaza-backend.herokuapp.com/api/brand";
+        $brand_api_url = env('API_BASE_URL')."/api/brand";
         $brandCurlOutput  = HandleApi::getCURLOutput( $brand_api_url, 'GET', [] );
         $brand_json_resp = json_decode($brandCurlOutput);
         $brands = isset($brand_json_resp->data) ? $brand_json_resp->data : [];
 
-        $category_api_url = "https://xplaza-backend.herokuapp.com/api/category";
+        $category_api_url = env('API_BASE_URL')."/api/category";
         $categoryCurlOutput  = HandleApi::getCURLOutput( $category_api_url, 'GET', [] );
         $category_json_resp = json_decode($categoryCurlOutput);
         $categories = isset($category_json_resp->data) ? $category_json_resp->data : [];
 
-        $shop_api_url = "https://xplaza-backend.herokuapp.com/api/shop";
+        $shop_api_url = env('API_BASE_URL')."/api/shop?user_id=".Session::get('userId');
         $shopCurlOutput  = HandleApi::getCURLOutput( $shop_api_url, 'GET', [] );
         $shop_json_resp = json_decode($shopCurlOutput);
         $shops = isset($shop_json_resp->data) ? $shop_json_resp->data : [];
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/product/".intval($item_id);
+        $api_url = env('API_BASE_URL')."/api/product/".intval($item_id);
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedData = json_decode($curlOutput);
         $item_data = isset($decodedData->data) ? $decodedData->data : [];
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/product/".intval($item_id);
+        $api_url = env('API_BASE_URL')."/api/product/".intval($item_id);
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedDataForItem = json_decode($curlOutputMain);
         $itemInfo = $decodedDataForItem->data;
 
-        $shop_api_url = "https://xplaza-backend.herokuapp.com/api/currency";
+        $shop_api_url = env('API_BASE_URL')."/api/currency";
         $shopCurlOutput  = HandleApi::getCURLOutput( $shop_api_url, 'GET', [] );
         $shop_json_resp = json_decode($shopCurlOutput);
         $currencies = isset($shop_json_resp->data) ? $shop_json_resp->data : [];
 
-        $shop_api_url = "https://xplaza-backend.herokuapp.com/api/prodvartype";
+        $shop_api_url = env('API_BASE_URL')."/api/prodvartype";
         $shopCurlOutput  = HandleApi::getCURLOutput( $shop_api_url, 'GET', [] );
         $shop_json_resp = json_decode($shopCurlOutput);
         $prodvartypes = isset($shop_json_resp->data) ? $shop_json_resp->data : [];
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/productimage/".intval($itemInfo->id);
+        $api_url = env('API_BASE_URL')."/api/productimage/".intval($itemInfo->id);
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedDataForItem = json_decode($curlOutputMain);
         $imagenfo = $decodedDataForItem->data;
@@ -289,12 +305,12 @@ class ItemController extends Controller
 
         $item_id = $request->get('item_id');
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/product/".intval($item_id);
+        $api_url = env('API_BASE_URL')."/api/product/".intval($item_id);
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedDataForItem = json_decode($curlOutputMain);
         $itemInfo = $decodedDataForItem->data;
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/productimage/".intval($itemInfo->id);
+        $api_url = env('API_BASE_URL')."/api/productimage/".intval($itemInfo->id);
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedDataForItem = json_decode($curlOutputMain);
         $imagenfo = $decodedDataForItem->data;
@@ -337,7 +353,7 @@ class ItemController extends Controller
             'selling_price'    => 'required',
             'currency_id'    => 'required',
             'product_var_type_id'    => 'required',
-            'product_var_type_option'    => 'required'
+            'product_var_type_value'    => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
@@ -356,7 +372,7 @@ class ItemController extends Controller
         $selling_price = $request->get('selling_price');
         $currency_id = $request->get('currency_id');
         $product_var_type_id = $request->get('product_var_type_id');
-        $product_var_type_option = $request->get('product_var_type_option');
+        $product_var_type_value = $request->get('product_var_type_value');
 
 
         $bodyData = [
@@ -369,13 +385,13 @@ class ItemController extends Controller
             "description"=>$description,
             "name"=>$item_name,
             "product_var_type_id"=>$product_var_type_id,
-            "product_var_type_option"=>$product_var_type_option,
+            "product_var_type_value"=>$product_var_type_value,
             "selling_price"=>$selling_price,
             "shop_id"=>$shop_id
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/product/update";
+        $api_url = env('API_BASE_URL')."/api/product/update";
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
 
         $decodedResp = json_decode($curlOutputMain);
@@ -395,7 +411,7 @@ class ItemController extends Controller
                 "product_id"=>$item_id
             ];
             $fieldData = json_encode($bodyData);
-            $api_url = "https://xplaza-backend.herokuapp.com/api/productimage/update";
+            $api_url = env('API_BASE_URL')."/api/productimage/update";
             $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
         }
 
@@ -429,7 +445,7 @@ class ItemController extends Controller
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/product/".intval($request->get('item_id'));
+        $api_url = env('API_BASE_URL')."/api/product/".intval($request->get('item_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
 
         $decodedData = json_decode($curlOutput);

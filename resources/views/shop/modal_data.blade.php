@@ -13,8 +13,8 @@
     <input name="edit_shop_name" value="{{$shop_data->name}}" type="text" class="form-control edit_shop_name" placeholder="Enter Shop Name">
 </div>
 <div class="form-group">
-    <label for="exampleInputEmail1">Description</label>
-    <textarea name="edit_shop_description" class="form-control edit_shop_description">{{$shop_data->description}}</textarea>
+    <label for="exampleInputEmail1">Owner name</label>
+    <input name="edit_owner" type="text" value="{{$shop_data->owner}}" class="form-control edit_owner" placeholder="Enter owner Name">
 </div>
 <div class="form-group">
     <label for="exampleInputEmail1">Address</label>

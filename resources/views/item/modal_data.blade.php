@@ -67,6 +67,10 @@
     </select>
 </div>
 <div class="form-group">
+    <label for="exampleInputEmail1">Product Var Type Value</label>
+    <input name="edit_prodvartype_value" type="text" class="form-control edit_prodvartype_value" value="{{$itemInfo->product_var_type_value}}" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter value">
+</div>
+<div class="form-group">
     <label for="exampleInputEmail1">Quantity</label>
     <input name="quantity" type="text" class="form-control edit_quantity" onkeyup="this.value=this.value.replace(/[^\d]/,'')" value="{{$itemInfo->quantity}}"  placeholder="Enter quantity">
 </div>

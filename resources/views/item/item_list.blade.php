@@ -65,6 +65,7 @@
                                            width="100%">
                                         <thead>
                                         <tr>
+                                            <th>Image</th>
                                             <th>Name</th>
                                             <th>Description</th>
                                             <th>Buying Price</th>
@@ -158,6 +159,10 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="exampleInputEmail1">Product Var Type Value</label>
+                        <input name="prodvartype_value" type="text" class="form-control prodvartype_value" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter value">
+                    </div>
+                    <div class="form-group">
                         <label for="exampleInputEmail1">Quantity</label>
                         <input name="quantity" type="text" class="form-control quantity" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter quantity">
                     </div>
@@ -235,7 +240,7 @@
 
 
     <div id="uploadimageModal" class="modal" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
 
                 <div class="modal-body">
@@ -276,13 +281,13 @@
             $image_crop = $('#image_demo').croppie({
                 enableExif: true,
                 viewport: {
-                    width:250,
-                    height:200,
+                    width:500,
+                    height:500,
                     type:'square' //circle
                 },
                 boundary:{
-                    width:300,
-                    height:300
+                    width:520,
+                    height:520
                 }
             });
 
@@ -365,10 +370,11 @@
                         method: 'post'
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
-                        {data: 'description', name: 'description', searchable: true},
-                        {data: 'buying_price', name: 'buying_price', searchable: true},
-                        {data: 'selling_price', name: 'selling_price', searchable: true},
+                        {data: 'image', name: 'image', searchable: false,orderable: false},
+                        {data: 'name', name: 'name', searchable: true,orderable: false},
+                        {data: 'description', name: 'description', searchable: true,orderable: false},
+                        {data: 'buying_price', name: 'buying_price', searchable: true,orderable: false},
+                        {data: 'selling_price', name: 'selling_price', searchable: true,orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
                     "aaSorting": []
@@ -398,7 +404,7 @@
                 var selling_price = $('.selling_price').val();
                 var currency_id = $('.currency_id').val();
                 var product_var_type_id = $('.prodvartype_id').val();
-                var product_var_type_option = 0;
+                var product_var_type_value = $('.prodvartype_value').val();
                 var item_image = $('.base64_image').val();
                 var quantity = $('.quantity').val();
 
@@ -440,7 +446,7 @@
                         product_var_type_id: product_var_type_id,
                         item_image: item_image,
                         quantity: quantity,
-                        product_var_type_option: product_var_type_option
+                        product_var_type_value: product_var_type_value
                     },
                     success: function (response) {
                         btn.prop('disabled', false);
@@ -457,6 +463,19 @@
                             setTimeout(function () {
                                 $('#add-modal-lg').modal('hide');
                             }, 3200);
+
+                            $('.item_name').val('');
+                            $('.description').val('');
+                            $('.shop_id').val('');
+                            $('.brand_id').val('');
+                            $('.category_id').val('');
+                            $('.buying_price').val('');
+                            $('.selling_price').val('');
+                            $('.currency_id').val('');
+                            $('.prodvartype_id').val('');
+                            $('.prodvartype_value').val('');
+                            $('.base64_image').val('');
+                            $('.quantity').val('');
 
                             var dataTable = $('#item_list').dataTable();
                             dataTable.fnDestroy();
@@ -546,7 +565,7 @@
                 var quantity = $('.edit_quantity').val();
                 var currency_id = $('.edit_currency_id').val();
                 var product_var_type_id = $('.edit_prodvartype_id').val();
-                var product_var_type_option = 0;
+                var product_var_type_value = $('.edit_prodvartype_value').val();
                 var item_image = $('.edit_base64_image').val();
                 var item_image_id = $('.edit_image_id').val();
 
@@ -580,7 +599,7 @@
                         product_var_type_id: product_var_type_id,
                         item_image: item_image,
                         item_image_id: item_image_id,
-                        product_var_type_option: product_var_type_option
+                        product_var_type_value: product_var_type_value
                     },
                     success: function (response) {
                         btn.prop('disabled', false);

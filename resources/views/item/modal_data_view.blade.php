@@ -37,6 +37,10 @@
     <input name="" type="text" value="{{$itemInfo->product_var_type_name}}" class="form-control " readonly>
 </div>
 <div class="form-group">
+    <label for="exampleInputEmail1">Product Var Type Value</label>
+    <input name="" type="text" class="form-control " value="{{$itemInfo->product_var_type_value}}" class="form-control " readonly>
+</div>
+<div class="form-group">
     <label for="exampleInputEmail1">Quantity</label>
     <input name="quantity" type="text" class="form-control edit_quantity"  value="{{$itemInfo->quantity}}"  readonly>
 </div>

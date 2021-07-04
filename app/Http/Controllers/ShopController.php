@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Session;
 
 class ShopController extends Controller
 {
@@ -29,7 +30,7 @@ class ShopController extends Controller
             die('Not access . Recorded this '); exit();
         }
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/location";
+        $api_url = env('API_BASE_URL')."/api/location";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
 
@@ -40,7 +41,8 @@ class ShopController extends Controller
 
     public function getList()
     {
-        $api_url = "https://xplaza-backend.herokuapp.com/api/shop";
+        $api_url = env('API_BASE_URL')."/api/shop?user_id=".Session::get('userId');
+
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -85,7 +87,7 @@ class ShopController extends Controller
 
         $rules = [
             'shop_name'        => 'required',
-            'shop_description' => 'required',
+            'owner'            => 'required',
             'shop_address'     => 'required',
             'location_id'      => 'required'
         ];
@@ -95,19 +97,19 @@ class ShopController extends Controller
         }
 
         $shop_name = $request->get('shop_name');
-        $shop_description = $request->get('shop_description');
+        $shop_owner = $request->get('owner');
         $shop_address = $request->get('shop_address');
         $location_id = $request->get('location_id');
 
         $bodyData = [
             "name"=>$shop_name,
-            "description"=>$shop_description,
+            "owner"=>$shop_owner,
             "address"=>$shop_address,
             "location_id"=>$location_id
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/shop/add";
+        $api_url = env('API_BASE_URL')."/api/shop/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -135,12 +137,12 @@ class ShopController extends Controller
 
         $shop_id = $request->get('shop_id');
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/location";
+        $api_url = env('API_BASE_URL')."/api/location";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
         $locations = isset($json_resp->data) ? $json_resp->data : [];
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/shop/".intval($shop_id);
+        $api_url = env('API_BASE_URL')."/api/shop/".intval($shop_id);
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedData = json_decode($curlOutput);
         $shop_data = isset($decodedData->data) ? $decodedData->data : [];
@@ -167,7 +169,7 @@ class ShopController extends Controller
             'edit_shop_id'     => 'required',
             'edit_location_id' => 'required',
             'edit_shop_name'     => 'required',
-            'edit_shop_description'      => 'required',
+            'edit_owner'      => 'required',
             'edit_shop_address'      => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
@@ -177,20 +179,20 @@ class ShopController extends Controller
 
         $shop_id = $request->get('edit_shop_id');
         $shop_name = $request->get('edit_shop_name');
-        $shop_description = $request->get('edit_shop_description');
+        $shop_owner = $request->get('edit_owner');
         $shop_address = $request->get('edit_shop_address');
         $location_id = $request->get('edit_location_id');
 
         $bodyData = [
             "name"=>$shop_name,
-            "description"=>$shop_description,
+            "owner"=>$shop_owner,
             "id"=>$shop_id,
             "address"=>$shop_address,
             "location_id"=>$location_id
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/shop/update";
+        $api_url = env('API_BASE_URL')."/api/shop/update";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -219,7 +221,7 @@ class ShopController extends Controller
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $api_url = "https://xplaza-backend.herokuapp.com/api/shop/".intval($request->get('shop_id'));
+        $api_url = env('API_BASE_URL')."/api/shop/".intval($request->get('shop_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
 
         $decodedData = json_decode($curlOutput);

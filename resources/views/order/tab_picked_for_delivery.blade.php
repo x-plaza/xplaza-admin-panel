@@ -1,13 +1,12 @@
-
 <div class="input-group col-md-3" >
-    <input type="max_date" class="pending_datepicker form-control" placeholder="Click here to set date" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    <input type="max_date" class="in_progress_datepicker form-control" placeholder="Click here to set date" aria-label="Default" aria-describedby="inputGroup-sizing-default">
     <div class="input-group-prepend">
-         <button class="btn btn-info pending_search"> <i class="fa fa-search"></i> Search </button>
+        <button class="btn btn-info in_progress_search"> <i class="fa fa-search"></i> Search </button>
     </div>
 </div>
 
 <div class="table-responsive">
-    <table id="pending_order_list"
+    <table id="picked_for_delivery_order_list"
            class="table table-striped table-bordered dt-responsive " cellspacing="0"
            width="100%">
         <thead>
@@ -24,3 +23,4 @@
         </tbody>
     </table>
 </div>
+

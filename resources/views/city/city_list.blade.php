@@ -178,7 +178,7 @@
                         method: 'post'
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true},
+                        {data: 'name', name: 'name', searchable: true,orderable: false},
                         // {data: 'state_id', name: 'state_id', searchable: true},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
