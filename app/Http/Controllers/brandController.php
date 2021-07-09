@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\brand;
 use App\Libraries\AclHandler;
 use App\Libraries\HandleApi;
 use App\shop;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\Session;
 
-class ShopController extends Controller
+class brandController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,25 +23,19 @@ class ShopController extends Controller
     }
 
 
-    public function shopList()
+    public function brandList()
     {
-        if (AclHandler::hasAccess('Shop','full') == false){
+        if (AclHandler::hasAccess('Brand','full') == false){
             die('Not access . Recorded this '); exit();
         }
 
-        $api_url = env('API_BASE_URL')."/api/location";
-        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
-        $json_resp = json_decode($curlOutput);
-
-        $locations = isset($json_resp->data) ? $json_resp->data : [];
-        return view('shop.shop_list',compact('locations'));
+        return view('brand.brand_list');
     }
 
 
     public function getList()
     {
-        $api_url = env('API_BASE_URL')."/api/shop?user_id=".Session::get('userId');
-
+        $api_url = env('API_BASE_URL')."/api/brand";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -51,11 +44,11 @@ class ShopController extends Controller
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
                 $action = '';
-                if (AclHandler::hasAccess('Shop','update') == true){
-                    $action = '<button type="button" class="btn btn-info btn-xs open_shop_modal" data-shop_id="'.$data->id.'" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
+                if (AclHandler::hasAccess('Brand','update') == true) {
+                    $action = '<button type="button" class="btn btn-info btn-xs open_brand_modal" data-brand_id="' . $data->id . '" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
                 }
-                if (AclHandler::hasAccess('Shop','delete') == true) {
-                    $action .= ' <button type="button" class="btn btn-danger btn-xs deleteShop" data-shop_id="' . $data->id . '"><b><i class="fa fa-trash"></i> Delete</b></button>';
+                if (AclHandler::hasAccess('Brand','delete') == true) {
+                    $action .= ' <button type="button" class="btn btn-danger btn-xs deleteBrand" data-brand_id="' . $data->id . '"><b><i class="fa fa-trash"></i> Delete</b></button>';
                 }
                 return $action;
             })
@@ -81,35 +74,29 @@ class ShopController extends Controller
      */
     public function store(Request $request)
     {
-        if (AclHandler::hasAccess('Shop','add') == false){
+        if (AclHandler::hasAccess('Brand','add') == false){
             return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
         }
 
         $rules = [
-            'shop_name'        => 'required',
-            'owner'            => 'required',
-            'shop_address'     => 'required',
-            'location_id'      => 'required'
+            'brand_name'  => 'required',
+            'description' => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $shop_name = $request->get('shop_name');
-        $shop_owner = $request->get('owner');
-        $shop_address = $request->get('shop_address');
-        $location_id = $request->get('location_id');
+        $brand_name = $request->get('brand_name');
+        $description = $request->get('description');
 
         $bodyData = [
-            "name"=>$shop_name,
-            "owner"=>$shop_owner,
-            "address"=>$shop_address,
-            "location_id"=>$location_id
+            "name"=>$brand_name,
+            "description"=>$description
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = env('API_BASE_URL')."/api/shop/add";
+        $api_url = env('API_BASE_URL')."/api/brand/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -118,81 +105,42 @@ class ShopController extends Controller
         }else{
             return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
         }
+
     }
+
 
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-
-    public function shopInfo(Request $request)
+    public function updateBrand(Request $request)
     {
-        $rules = [
-            'shop_id'        => 'required'
-        ];
-        $validator = Validator::make( $request->all(), $rules );
-        if ( $validator->fails() ) {
-            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
-        }
-
-        $shop_id = $request->get('shop_id');
-
-        $api_url = env('API_BASE_URL')."/api/location";
-        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
-        $json_resp = json_decode($curlOutput);
-        $locations = isset($json_resp->data) ? $json_resp->data : [];
-
-        $api_url = env('API_BASE_URL')."/api/shop/".intval($shop_id);
-        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
-        $decodedData = json_decode($curlOutput);
-        $shop_data = isset($decodedData->data) ? $decodedData->data : [];
-
-        $public_html = strval(view("shop.modal_data", compact('shop_data','locations')));
-
-        return response()->json(['responseCode' => 1, 'html' => $public_html, 'shop_id'=>$shop_id,'message'=>'Successfully fetches']);
-
-
-    }
-
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-
-    public function updateShop(Request $request)
-    {
-        if (AclHandler::hasAccess('Shop','update') == false){
+        if (AclHandler::hasAccess('Brand','update') == false){
             return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
         }
 
         $rules = [
-            'edit_shop_id'     => 'required',
-            'edit_location_id' => 'required',
-            'edit_shop_name'     => 'required',
-            'edit_owner'      => 'required',
-            'edit_shop_address'      => 'required'
+            'brand_id'  => 'required',
+            'brand_name'  => 'required',
+            'description' => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $shop_id = $request->get('edit_shop_id');
-        $shop_name = $request->get('edit_shop_name');
-        $shop_owner = $request->get('edit_owner');
-        $shop_address = $request->get('edit_shop_address');
-        $location_id = $request->get('edit_location_id');
+        $brand_id = $request->get('brand_id');
+        $brand_name = $request->get('brand_name');
+        $description = $request->get('description');
 
         $bodyData = [
-            "name"=>$shop_name,
-            "owner"=>$shop_owner,
-            "id"=>$shop_id,
-            "address"=>$shop_address,
-            "location_id"=>$location_id
+            "name"=>$brand_name,
+            "id"=>$brand_id,
+            "description"=>$description
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = env('API_BASE_URL')."/api/shop/update";
+        $api_url = env('API_BASE_URL')."/api/brand/update";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -203,25 +151,57 @@ class ShopController extends Controller
         }
 
     }
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function deleteShop(Request $request)
-    {
-        if (AclHandler::hasAccess('Shop','delete') == false){
-            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
-        }
 
+    public function brandInfo(Request $request)
+    {
         $rules = [
-            'shop_id'        => 'required'
+            'brand_id'        => 'required'
         ];
         $validator = Validator::make( $request->all(), $rules );
         if ( $validator->fails() ) {
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $api_url = env('API_BASE_URL')."/api/shop/".intval($request->get('shop_id'));
+        $brand_id = $request->get('brand_id');
+
+        $api_url = env('API_BASE_URL')."/api/brand/".intval($brand_id);
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $decodedData = json_decode($curlOutput);
+        $brand_data = isset($decodedData->data) ? $decodedData->data : [];
+
+        $public_html = strval(view("brand.modal_data", compact('brand_data')));
+
+        return response()->json(['responseCode' => 1, 'html' => $public_html, 'message'=>'Successfully fetches']);
+
+
+
+    }
+
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteBrand(Request $request)
+    {
+        if (AclHandler::hasAccess('Brand','delete') == false){
+            return response()->json( ['responseCode'=>0,'message'=>'Not access . Recorded this']);
+        }
+
+        $rules = [
+            'brand_id'        => 'required'
+        ];
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $api_url = env('API_BASE_URL')."/api/brand/".intval($request->get('brand_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
 
         $decodedData = json_decode($curlOutput);

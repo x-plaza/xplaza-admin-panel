@@ -44,17 +44,23 @@ class adminUserController extends Controller
 
     public function getList()
     {
-        $api_url = env('API_BASE_URL')."/api/adminuser?user_id=".Session::get('userId');
+        $api_url = env('API_BASE_URL')."/api/adminuser/?user_id=".Session::get('userId');
+
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
-        $data[] = $decodedData->data;
+
+        if (count(array($decodedData)) > 0){
+            $data = $decodedData->data;
+        }else{
+            $data[] = $decodedData->data;
+        }
 
         return Datatables::of(collect($data))
             ->addColumn('action', function ($data) {
                 $action = '';
                 if (AclHandler::hasAccess('User Creation','update') == true) {
-                    $action = '<button type="button" class="btn btn-info btn-xs open_admin_modal" data-admin_id="' . $data->id . '" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
+                  //  $action = '<button type="button" class="btn btn-info btn-xs open_admin_modal" data-admin_id="' . $data->id . '" ><b><i class="fa fa-edit"></i> Edit</b></button> &nbsp;';
                 }
                 if (AclHandler::hasAccess('User Creation','delete') == true){
                     $action .= ' <button type="button" class="btn btn-danger btn-xs deleteAdmin" data-admin_id="'.$data->id.'"><b><i class="fa fa-trash"></i> Delete</b></button>';
@@ -105,7 +111,7 @@ class adminUserController extends Controller
         $salt = '123';
 
         $bodyData = [
-            "name"=>$name,
+            "user_name"=>$name,
             "password"=>$password,
             "role_id"=>$role_id,
             "salt"=>$salt,
@@ -196,7 +202,7 @@ class adminUserController extends Controller
 
         $bodyData = [
             "id"=>$admin_id,
-            "name"=>$name,
+            "user_name"=>$name,
             "password"=>$password,
             "role_id"=>$role_id,
             "salt"=>$salt,

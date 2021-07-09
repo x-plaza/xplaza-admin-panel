@@ -36,12 +36,15 @@ class manageOrderController extends Controller
         $data = $decodedData->data;
 
         return Datatables::of(collect($data))
+            ->addColumn('invoice_number', function ($data) {
+                return 'INVGEN'.$data->invoice_number;
+            })
             ->addColumn('action', function ($data) {
                 $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
            // ->removeColumn('id')
-            ->rawColumns(['action'])
+            ->rawColumns(['invoice_number','action'])
             ->make(true);
     }
 
@@ -117,12 +120,15 @@ class manageOrderController extends Controller
         $data = $decodedData->data;
 
         return Datatables::of(collect($data))
+            ->addColumn('invoice_number', function ($data) {
+                return 'INVGEN'.$data->invoice_number;
+            })
             ->addColumn('action', function ($data) {
                 $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
           //  ->removeColumn('id')
-            ->rawColumns(['action'])
+            ->rawColumns(['invoice_number','action'])
             ->make(true);
 
     }
@@ -131,9 +137,9 @@ class manageOrderController extends Controller
     {
         $date = $request->get('date');
         if (isset($date)){
-            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Picked_for_delivery&user_id=".Session::get('userId');
+            $api_url = urlencode(env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Picked%20for%20delivery&user_id=".Session::get('userId'));
         }else{
-            $api_url = env('API_BASE_URL')."/api/order/?status=Picked_for_delivery&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL')."/api/order/?status=Picked%20for%20delivery&user_id=".Session::get('userId');
         }
 
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
@@ -142,12 +148,15 @@ class manageOrderController extends Controller
         $data = $decodedData->data;
 
         return Datatables::of(collect($data))
+            ->addColumn('invoice_number', function ($data) {
+                return 'INVGEN'.$data->invoice_number;
+            })
             ->addColumn('action', function ($data) {
                 $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
             //  ->removeColumn('id')
-            ->rawColumns(['action'])
+            ->rawColumns(['invoice_number','action'])
             ->make(true);
 
     }
@@ -169,12 +178,45 @@ class manageOrderController extends Controller
         $data = $decodedData->data;
 
         return Datatables::of(collect($data))
+            ->addColumn('invoice_number', function ($data) {
+                return 'INVGEN'.$data->invoice_number;
+            })
             ->addColumn('action', function ($data) {
                 $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
           //  ->removeColumn('id')
-            ->rawColumns(['action'])
+            ->rawColumns(['invoice_number','action'])
+            ->make(true);
+
+    }
+
+
+    public function canceledContent(Request $request)
+    {
+
+        $date = $request->get('date');
+        if (isset($date)){
+            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Cancelled&user_id=".Session::get('userId');
+        }else{
+            $api_url = env('API_BASE_URL')."/api/order/?status=Cancelled&user_id=".Session::get('userId');
+        }
+
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+
+        $decodedData = json_decode($curlOutput);
+        $data = $decodedData->data;
+
+        return Datatables::of(collect($data))
+            ->addColumn('invoice_number', function ($data) {
+                return 'INVGEN'.$data->invoice_number;
+            })
+            ->addColumn('action', function ($data) {
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                return $action;
+            })
+            //  ->removeColumn('id')
+            ->rawColumns(['invoice_number','action'])
             ->make(true);
 
     }

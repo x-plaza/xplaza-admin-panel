@@ -172,7 +172,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li class="nav-item">
                             <a href="{{url('/location/list')}}" class="nav-link {{ (Request::is('location/*') ? 'active' : '') }}">
                                 <i class="nav-icon fas fa-map-marker"></i>
-                                <p>Location</p>
+                                <p>Locations</p>
                             </a>
                         </li>
                     @endif
@@ -188,7 +188,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li class="nav-item">
                             <a href="{{url('/admin-user/list')}}" class="nav-link {{ (Request::is('admin-user/*') ? 'active' : '') }}">
                                 <i class="nav-icon fas fa-users"></i>
-                                <p>Admin User</p>
+                                <p>Admin Users</p>
                             </a>
                         </li>
                     @endif
@@ -196,7 +196,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="nav-item">
                         <a href="{{url('/brand/brand-list')}}" class="nav-link {{ (Request::is('brand/*') ? 'active' : '') }}">
                             <i class="nav-icon fas fa-tags"></i>
-                            <p>Brand</p>
+                            <p>Brands</p>
                         </a>
                     </li>
                     @endif
@@ -204,7 +204,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="nav-item">
                         <a href="{{url('/category/category-list')}}" class="nav-link {{ (Request::is('category/*') ? 'active' : '') }}">
                             <i class="nav-icon fas fa-list"></i>
-                            <p>Category</p>
+                            <p>Categories</p>
                         </a>
                     </li>
                     @endif
@@ -212,7 +212,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="nav-item">
                         <a href="{{url('/product-var-type/list')}}" class="nav-link {{ (Request::is('product-var-type/*') ? 'active' : '') }}">
                             <i class="nav-icon fas fa-align-center"></i>
-                            <p>Product Variation</p>
+                            <p>Product Variations</p>
                         </a>
                     </li>
                     @endif
@@ -220,7 +220,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li class="nav-item">
                             <a href="{{url('/item/item-list')}}" class="nav-link {{ (Request::is('item/*') ? 'active' : '') }}">
                                 <i class="nav-icon fas fa-cubes"></i>
-                                <p>Product</p>
+                                <p>Products</p>
                             </a>
                         </li>
                     @endif
@@ -228,7 +228,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="nav-item">
                         <a href="{{url('/city/list')}}" class="nav-link {{ (Request::is('city/*') ? 'active' : '') }}">
                             <i class="nav-icon fas fa-map-pin"></i>
-                            <p>City</p>
+                            <p>Cities</p>
                         </a>
                     </li>
                     @endif
@@ -236,7 +236,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li class="nav-item">
                             <a href="{{url('/coupon/list')}}" class="nav-link {{ (Request::is('coupon/*') ? 'active' : '') }}">
                                 <i class="nav-icon fas fa-list"></i>
-                                <p>Coupon</p>
+                                <p>Coupons</p>
                             </a>
                         </li>
                     @endif
