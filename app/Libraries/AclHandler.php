@@ -10,7 +10,7 @@ class AclHandler
 {
     public static function hasAccess($module = null,$action = 'dummy'){
 
-        return true;
+       
         $sessionDataPermission = session::get('permissions');
         $allPermission = isset($sessionDataPermission) ? session::get('permissions') : null;
 
