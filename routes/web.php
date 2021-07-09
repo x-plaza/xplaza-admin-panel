@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'homeController@index')->name('home');
 
 Route::post('/apiBasedLogin', 'apiAuthenticationsController@loginAttempt');
 Route::get('/apiBasedLogOut', 'apiAuthenticationsController@logOutAttempt');
@@ -35,26 +35,26 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
     Route::post('/item/delete-item', 'ItemController@deleteItem');
     Route::post('/item/update-item', 'ItemController@updateItem');
 
-    Route::get('/category/category-list', 'CategoryController@categoryList');
-    Route::post('/category/get-list', 'CategoryController@getList');
-    Route::post('/category/add-new-category', 'CategoryController@store');
-    Route::post('/category/get-category-info', 'CategoryController@categoryInfo');
-    Route::post('/category/delete-category', 'CategoryController@deleteCategory');
-    Route::post('/category/update-category', 'CategoryController@updateCategory');
+    Route::get('/category/category-list', 'categoryController@categoryList');
+    Route::post('/category/get-list', 'categoryController@getList');
+    Route::post('/category/add-new-category', 'categoryController@store');
+    Route::post('/category/get-category-info', 'categoryController@categoryInfo');
+    Route::post('/category/delete-category', 'categoryController@deleteCategory');
+    Route::post('/category/update-category', 'categoryController@updateCategory');
 
-    Route::get('/brand/brand-list', 'BrandController@brandList');
-    Route::post('/brand/get-list', 'BrandController@getList');
-    Route::post('/brand/add-new-brand', 'BrandController@store');
-    Route::post('/brand/get-brand-info', 'BrandController@brandInfo');
-    Route::post('/brand/delete-brand', 'BrandController@deleteBrand');
-    Route::post('/brand/update-brand', 'BrandController@updateBrand');
+    Route::get('/brand/brand-list', 'brandController@brandList');
+    Route::post('/brand/get-list', 'brandController@getList');
+    Route::post('/brand/add-new-brand', 'brandController@store');
+    Route::post('/brand/get-brand-info', 'brandController@brandInfo');
+    Route::post('/brand/delete-brand', 'brandController@deleteBrand');
+    Route::post('/brand/update-brand', 'brandController@updateBrand');
 
-    Route::get('/shop/shop-list', 'ShopController@shopList');
-    Route::post('/shop/get-list', 'ShopController@getList');
-    Route::post('/shop/add-new-shop', 'ShopController@store');
-    Route::post('/shop/get-shop-info', 'ShopController@shopInfo');
-    Route::post('/shop/delete-shop', 'ShopController@deleteShop');
-    Route::post('/shop/update-shop', 'ShopController@updateShop');
+    Route::get('/shop/shop-list', 'shopController@shopList');
+    Route::post('/shop/get-list', 'shopController@getList');
+    Route::post('/shop/add-new-shop', 'shopController@store');
+    Route::post('/shop/get-shop-info', 'shopController@shopInfo');
+    Route::post('/shop/delete-shop', 'shopController@deleteShop');
+    Route::post('/shop/update-shop', 'shopController@updateShop');
 
     Route::get('/product-var-type/list', 'pvtController@pvtList');
     Route::post('/product-var-type/get-list', 'pvtController@getList');
@@ -89,6 +89,7 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
     Route::post('/order/get-confirmed-list', 'manageOrderController@confirmedContent');
     Route::post('/order/get-picked_for_delivery-list', 'manageOrderController@pickedForDeliveryContent');
     Route::post('/order/get-delivered-list', 'manageOrderController@deliveredContent');
+    Route::post('/order/get-canceled-list', 'manageOrderController@canceledContent');
     Route::post('/order/get-order-details', 'manageOrderController@orderDetails');
     Route::post('/order/update-status', 'manageOrderController@updateStatus');
 
@@ -101,5 +102,9 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
     Route::post('/coupon/update-coupon', 'couponController@updateCoupon');
 
     Route::get('/user/profile', 'usersController@index');
+    Route::post('/dashboard/gate-content', 'homeController@dashboardContent');
+
+    Route::get('/order/invoice/{order_id}', 'invoiceController@index');
+
 });
 

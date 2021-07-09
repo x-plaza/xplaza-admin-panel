@@ -1,12 +1,13 @@
+
 <div class="input-group col-md-3" >
-    <input type="max_date" class="confirmed_datepicker form-control" placeholder="Click here to set date" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    <input type="max_date" class="canceled_datepicker form-control" placeholder="Click here to set date" aria-label="Default" aria-describedby="inputGroup-sizing-default">
     <div class="input-group-prepend">
-        <button class="btn btn-info confirmed_search"> <i class="fa fa-search"></i> Search </button>
+         <button class="btn btn-info canceled_search"> <i class="fa fa-search"></i> Search </button>
     </div>
 </div>
 
 <div class="table-responsive">
-    <table id="confirmed_order_list"
+    <table id="canceled_order_list"
            class="table table-striped table-bordered dt-responsive " cellspacing="0"
            width="100%">
         <thead>
@@ -24,4 +25,3 @@
         </tbody>
     </table>
 </div>
-

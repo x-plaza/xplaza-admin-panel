@@ -16,6 +16,7 @@
             <th>Shop Name</th>
             <th>Total Price</th>
             <th>Customer Mob</th>
+            <th>Delivery</th>
             <th>Action</th>
         </tr>
         </thead>

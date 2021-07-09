@@ -58,7 +58,7 @@
                                         <a class="nav-link delivered-tab-content" id="delivered-tab" data-toggle="pill" href="#tab-delivered" role="tab" aria-controls="tab-delivered" aria-selected="false">Delivered</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="canceled-tab" data-toggle="pill" href="#tab-canceled" role="tab" aria-controls="tab-canceled" aria-selected="false">Canceled</a>
+                                        <a class="nav-link canceled-tab-content" id="canceled-tab" data-toggle="pill" href="#tab-canceled" role="tab" aria-controls="tab-canceled" aria-selected="false">Canceled</a>
                                     </li>
                                 </ul>
                             </div>
@@ -77,9 +77,7 @@
                                         @include('order.tab_delivered')
                                     </div>
                                     <div class="tab-pane fade" id="tab-canceled" role="tabpanel" aria-labelledby="canceled-tab">
-{{--                                        <div class="canceled_list" style="text-align: center;">--}}
-{{--                                            <img class="img-responsive" src="{{asset('admin_src/loading_img.gif')}}" style="height: 170px;">--}}
-{{--                                        </div>--}}
+                                        @include('order.tab_canceled')
                                     </div>
                                 </div>
                             </div>
@@ -175,6 +173,7 @@
                         {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
                         {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
                         {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'date_to_deliver', name: 'date_to_deliver', searchable: true, orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
                     ],
                     "aaSorting": []
@@ -257,6 +256,7 @@
                         {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
                         {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
                         {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'date_to_deliver', name: 'date_to_deliver', searchable: true, orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
                     ],
                     "aaSorting": []
@@ -268,6 +268,11 @@
                 getConfirmedList();
             })
 
+            $(document).on('click', '.confirmed_search', function () {
+                var dataTable = $('#confirmed_order_list').dataTable();
+                dataTable.fnDestroy();
+                getConfirmedList();
+            })
 
             //*************** picked_for_delivery ***************************************
 
@@ -280,6 +285,8 @@
             $('.picked_for_delivery_datepicker').val('');
 
             function getPicked_for_deliveryList() {
+                var date =$('.picked_for_delivery_datepicker').val();
+
                 $('#picked_for_delivery_order_list').DataTable({
                     iDisplayLength: 25,
                     processing: true,
@@ -291,13 +298,18 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
                         url: '{{url("/order/get-picked_for_delivery-list")}}',
-                        method: 'post'
+                        method: 'post',
+                        data: function (d) {
+                            d._token = $('input[name="_token"]').val();
+                            d.date = date;
+                        }
                     },
                     columns: [
                         {data: 'invoice_number', name: 'order_id', searchable: false, orderable: false},
                         {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
                         {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
                         {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'date_to_deliver', name: 'date_to_deliver', searchable: true, orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
                     ],
                     "aaSorting": []
@@ -310,9 +322,24 @@
                 getPicked_for_deliveryList();
             })
 
+            $(document).on('click', '.picked_for_delivery_search', function () {
+                var dataTable = $('#picked_for_delivery_order_list').dataTable();
+                dataTable.fnDestroy();
+                getPicked_for_deliveryList();
+            })
+
             //*************** Delivered ***************************************
 
-            function getInDeliveredList() {
+            $('.delivered_datepicker').datetimepicker({
+                //   viewMode: 'years',
+                format: 'DD-MM-YYYY',
+                maxDate: (new Date()),
+                minDate: calDate
+            });
+            $('.delivered_datepicker').val('');
+
+            function getDeliveredList() {
+                var date =$('.delivered_datepicker').val();
                 $('#delivered_order_list').DataTable({
                     iDisplayLength: 25,
                     processing: true,
@@ -324,13 +351,18 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
                         url: '{{url("/order/get-delivered-list")}}',
-                        method: 'post'
+                        method: 'post',
+                        data: function (d) {
+                            d._token = $('input[name="_token"]').val();
+                            d.date = date;
+                        }
                     },
                     columns: [
                         {data: 'invoice_number', name: 'order_id', searchable: false, orderable: false},
                         {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
                         {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
                         {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'date_to_deliver', name: 'date_to_deliver', searchable: true, orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
                     ],
                     "aaSorting": []
@@ -339,7 +371,65 @@
             $(document).on('click', '.delivered-tab-content', function () {
                 var dataTable = $('#delivered_order_list').dataTable();
                 dataTable.fnDestroy();
-                getInDeliveredList();
+                getDeliveredList();
+            })
+
+            $(document).on('click', '.delivered_search', function () {
+                var dataTable = $('#delivered_order_list').dataTable();
+                dataTable.fnDestroy();
+                getDeliveredList();
+            })
+
+            //*************** Canceled ***************************************
+
+            $('.canceled_datepicker').datetimepicker({
+                //   viewMode: 'years',
+                format: 'DD-MM-YYYY',
+                maxDate: (new Date()),
+                minDate: calDate
+            });
+            $('.canceled_datepicker').val('');
+
+            function getCanceledList() {
+                var date =$('.canceled_datepicker').val();
+                $('#canceled_order_list').DataTable({
+                    iDisplayLength: 25,
+                    processing: true,
+                    serverSide: true,
+                    lengthChange: false,
+                    searching: true,
+                    ajax: {
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        url: '{{url("/order/get-canceled-list")}}',
+                        method: 'post',
+                        data: function (d) {
+                            d._token = $('input[name="_token"]').val();
+                            d.date = date;
+                        }
+                    },
+                    columns: [
+                        {data: 'invoice_number', name: 'order_id', searchable: false, orderable: false},
+                        {data: 'shop_name', name: 'shop_name', searchable: true , orderable: false},
+                        {data: 'grand_total_price', name: 'grand_total_price', searchable: true, orderable: false},
+                        {data: 'mobile_no', name: 'mobile_no', searchable: true, orderable: false},
+                        {data: 'date_to_deliver', name: 'date_to_deliver', searchable: true, orderable: false},
+                        {data: 'action', name: 'action', orderable: false, searchable: false, orderable: false}
+                    ],
+                    "aaSorting": []
+                });
+            }
+            $(document).on('click', '.canceled-tab-content', function () {
+                var dataTable = $('#canceled_order_list').dataTable();
+                dataTable.fnDestroy();
+                getCanceledList();
+            })
+
+            $(document).on('click', '.canceled_search', function () {
+                var dataTable = $('#canceled_order_list').dataTable();
+                dataTable.fnDestroy();
+                getCanceledList();
             })
 
             //***********************************************************************
@@ -390,7 +480,9 @@
                                 dataTable.fnDestroy();
                                 getInDeliveredList();
                             }else if(current_status_id == 6){
-
+                                var dataTable = $('#canceled_order_list').dataTable();
+                                dataTable.fnDestroy();
+                                getCanceledList();
                             }
 
 

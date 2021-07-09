@@ -1,7 +1,7 @@
 <div class="input-group col-md-3" >
-    <input type="max_date" class="in_progress_datepicker form-control" placeholder="Click here to set date" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    <input type="max_date" class="picked_for_delivery_datepicker form-control" placeholder="Click here to set date" aria-label="Default" aria-describedby="inputGroup-sizing-default">
     <div class="input-group-prepend">
-        <button class="btn btn-info in_progress_search"> <i class="fa fa-search"></i> Search </button>
+        <button class="btn btn-info picked_for_delivery_search"> <i class="fa fa-search"></i> Search </button>
     </div>
 </div>
 
@@ -15,6 +15,7 @@
             <th>Shop Name</th>
             <th>Total Price</th>
             <th>Customer Mob</th>
+            <th>Delivery</th>
             <th>Action</th>
         </tr>
         </thead>

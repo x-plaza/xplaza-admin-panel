@@ -20,7 +20,7 @@
 </div>
 <div class="form-group">
     <label for="exampleInputEmail1">Name</label>
-    <input name="edit_name" type="text" value="{{$admin_data->name}}" class="form-control edit_name" placeholder="Enter Name">
+    <input name="edit_name" type="text" value="{{$admin_data->user_name}}" class="form-control edit_name" placeholder="Enter Name">
 </div>
 <div class="form-group">
     <label for="exampleInputEmail1">Password</label>

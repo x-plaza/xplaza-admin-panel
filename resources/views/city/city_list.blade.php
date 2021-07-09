@@ -48,7 +48,7 @@
                                 <div class="row">
                                     <div class="col-md-2 ">
                                         @if(App\Libraries\AclHandler::hasAccess('City','add') == true)
-                                        <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#add-modal-lg">
+                                        <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#add-modal-lg">
                                             Add City
                                         </button>
                                         @endif
