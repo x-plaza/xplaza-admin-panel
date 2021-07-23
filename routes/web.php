@@ -21,7 +21,8 @@ Route::get('/home', 'homeController@index')->name('home');
 
 Route::post('/apiBasedLogin', 'apiAuthenticationsController@loginAttempt');
 Route::get('/apiBasedLogOut', 'apiAuthenticationsController@logOutAttempt');
-
+Route::post('/forgot-password/get-otp', 'forgotPassController@getOtp');
+Route::post('/forgot-password/set-new-password', 'forgotPassController@setNewPass');
 
 Route::group(array('middleware' => ['authAndAcl']), function() {
 
@@ -66,6 +67,7 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
     Route::get('/admin-user/list', 'adminUserController@userList');
     Route::post('/admin-user/get-list', 'adminUserController@getList');
     Route::post('/admin-user/add-new-user', 'adminUserController@store');
+    Route::post('/admin-user/get-otp', 'adminUserController@getOtp');
     Route::post('/admin-user/get-user-info', 'adminUserController@adminInfo');
     Route::post('/admin-user/delete-user', 'adminUserController@deleteAdmin');
     Route::post('/admin-user/update-user', 'adminUserController@updateAdmin');
@@ -102,6 +104,7 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
     Route::post('/coupon/update-coupon', 'couponController@updateCoupon');
 
     Route::get('/user/profile', 'usersController@index');
+    Route::post('/user/change-password', 'usersController@changePassword');
     Route::post('/dashboard/gate-content', 'homeController@dashboardContent');
 
     Route::get('/order/invoice/{order_id}', 'invoiceController@index');

@@ -48,7 +48,7 @@ class apiAuthenticationsController extends Controller
 
         try{
 
-            $api_url = "https://xplaza-backend.herokuapp.com/api/login/?password=".$pass."&username=".$username;
+            $api_url = env('API_BASE_URL')."/api/login?password=".$pass."&username=".$username;
             $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', [] );
             $decodedResp = json_decode($curlOutput);
 
