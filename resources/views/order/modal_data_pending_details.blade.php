@@ -10,7 +10,7 @@
               style="float: right;color: black;">{{$orderDetailsData->mobile_no}}</b></a>
     <a href="javascript:void(0)" class="list-group-item AddToInvoice">Delivery Hero <b
               style="float: right;color: black;">{{$orderDetailsData->delivery_person}}</b></a>
-    <a href="javascript:void(0)" class="list-group-item AddToInvoice">Delivery Man Mob <b
+    <a href="javascript:void(0)" class="list-group-item AddToInvoice">Mobile No <b
               style="float: right;color: black;">{{$orderDetailsData->contact_no}}</b></a>
   </div>
 </div>
@@ -77,9 +77,9 @@
 
 <div class="row">
 
-    <div class="input-group col-md-6 pull-left" >
+    <div class="input-group col-md-5 pull-left" >
       <select class="form-control order_status_id">
-        <option value="">Please select Status</option>
+        <option value="">Select Status</option>
         <option value="1" @if($orderDetailsData->status_id == 1) selected @endif>Pending</option>
         <option value="2" @if($orderDetailsData->status_id == 2) selected @endif>Confirmed</option>
         <option value="3" @if($orderDetailsData->status_id == 3) selected @endif>Picked for delivery</option>
@@ -92,7 +92,7 @@
     </div>
 
     <div class="input-group col-md-6 pull-right" >
-      <a href="{{url('/order/invoice/'.$orderDetailsData->invoice_number)}}" target="_blank" class="btn btn-md btn-info">Get Voucher</a>
+      <a href="{{url('/order/invoice/'.$orderDetailsData->invoice_number)}}" target="_blank" class="btn btn-md btn-info"><i class="fa fa-print"></i> Print Invoice</a>
     </div>
 
 </div>

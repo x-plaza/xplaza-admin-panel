@@ -17,6 +17,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
             background-color: #17a2b8 !important;
         }
+        .card-primary.card-outline {
+            border-top: 3px solid #0d0e0e;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini">

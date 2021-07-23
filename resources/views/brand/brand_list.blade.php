@@ -12,7 +12,34 @@
 
 
     <style>
+        .paginate_button.previous{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .paginate_button.next{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .paginate_button.current{
+            background-color: #1a525a;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: no-drop;
+        }
         .paginate_button{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
             margin-right: 10px;
         }
     </style>
@@ -227,11 +254,11 @@
                             $('.brand_name').val('');
                             $('.description').val('');
 
-                            $('.alert-success').fadeOut(3000);
+                            $('.alert-success').fadeOut(2000);
 
                             setTimeout(function () {
                                 $('#add-modal-lg').modal('hide');
-                            }, 3200);
+                            }, 2100);
 
                             var dataTable = $('#brand_list').dataTable();
                             dataTable.fnDestroy();
@@ -318,11 +345,11 @@
                                 '                                <strong>Success!</strong> ' + response.message + '\n' +
                                 '                            </div>');
 
-                            $('.alert-success').fadeOut(3000);
+                            $('.alert-success').fadeOut(2000);
 
                             setTimeout(function () {
                                 $('#edit-modal-lg').modal('hide');
-                            }, 3200);
+                            }, 2200);
 
                             var dataTable = $('#brand_list').dataTable();
                             dataTable.fnDestroy();
@@ -372,11 +399,11 @@
                             $('.shop_description').val('');
                             $('.shop_address').val('');
 
-                            $('.alert-success').fadeOut(3000);
+                            $('.alert-success').fadeOut(2000);
 
                             setTimeout(function () {
                                 $('#add-modal-lg').modal('hide');
-                            }, 3200);
+                            }, 2200);
 
                             var dataTable = $('#brand_list').dataTable();
                             dataTable.fnDestroy();

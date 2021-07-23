@@ -12,7 +12,34 @@
     <link rel="stylesheet" href="{{ asset("plugins/datepicker-oss/css/bootstrap-datetimepicker.min.css") }}" />
 
     <style>
+        .paginate_button.previous{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .paginate_button.next{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .paginate_button.current{
+            background-color: #1a525a;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: no-drop;
+        }
         .paginate_button{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
             margin-right: 10px;
         }
     </style>

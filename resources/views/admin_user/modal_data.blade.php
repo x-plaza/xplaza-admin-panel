@@ -11,21 +11,25 @@
 </div>
 <div class="form-group">
     <label for="">Shop</label>
-    <select name="edit_shop_id" class="form-control edit_shop_id">
-        <option value="">Please select shop</option>
+    <select class="select2 edit_shop_id" name="edit_shop_id" multiple="multiple" data-placeholder="Select shop" style="width: 100%;">
         @foreach($shops as $shop)
-            <option value="{{$shop->id}}" @if($shop->id == $admin_data->shop_id) selected @endif>{{$shop->name}}</option>
+            <option value="{{$shop->id}}" @if(in_array($shop->id,$shopArr)) selected @endif>{{$shop->name}}</option>
         @endforeach
     </select>
 </div>
 <div class="form-group">
-    <label for="exampleInputEmail1">Name</label>
-    <input name="edit_name" type="text" value="{{$admin_data->user_name}}" class="form-control edit_name" placeholder="Enter Name">
+    <label for="exampleInputEmail1">Full Name</label>
+    <input name="edit_name" type="text" value="{{$admin_data->full_name}}" class="form-control edit_name" placeholder="Enter Name">
 </div>
 <div class="form-group">
-    <label for="exampleInputEmail1">Password</label>
-    <input name="edit_password" type="text" value="{{$admin_data->password}}" class="form-control edit_password" placeholder="Enter password">
+    <label for="exampleInputEmail1">Email</label>
+    <input name="fixed_user_name" type="text" value="{{$admin_data->user_name}}" class="form-control fixed_user_name" placeholder="Enter Email" readonly>
+    <input name="edit_user_name" type="hidden" value="{{$admin_data->user_name}}" class="form-control edit_user_name">
 </div>
+{{--<div class="form-group">--}}
+{{--    <label for="exampleInputEmail1">Password</label>--}}
+    <input name="edit_password" type="hidden" value="{{$admin_data->password}}" class="form-control edit_password" placeholder="Enter password">
+{{--</div>--}}
 {{--<div class="form-group">--}}
 {{--    <label for="exampleInputEmail1">Salt</label>--}}
 {{--    <input name="edit_salt" type="text" value="{{$admin_data->salt}}" class="form-control edit_salt" placeholder="Enter salt">--}}

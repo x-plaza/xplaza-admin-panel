@@ -9,7 +9,34 @@
     <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/datatable/responsive.bootstrap.min.css") }}" />
     <link rel="stylesheet" href="{{ asset("plugins/datepicker-oss/css/bootstrap-datetimepicker.min.css") }}" />
     <style>
+        .paginate_button.previous{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .paginate_button.next{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .paginate_button.current{
+            background-color: #1a525a;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: no-drop;
+        }
         .paginate_button{
+            background-color: #17a2b8;
+            color: white;
+            padding: 2px;
+            border-radius: 2px;
+            cursor: pointer;
             margin-right: 10px;
         }
     </style>
@@ -49,7 +76,7 @@
                                         <a class="nav-link active pending-tab-content" id="pending-tab" data-toggle="pill" href="#tab-pending" role="tab" aria-controls="tab-pending" aria-selected="true">Pending</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link confirmed-tab-content" id="inprogress-tab" data-toggle="pill" href="#tab-confirmed" role="tab" aria-controls="tab-inprogress" aria-selected="false">confirmed</a>
+                                        <a class="nav-link confirmed-tab-content" id="inprogress-tab" data-toggle="pill" href="#tab-confirmed" role="tab" aria-controls="tab-inprogress" aria-selected="false">Confirmed</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link picked_for_delivery-tab-content" id="delivered-tab" data-toggle="pill" href="#tab-picked_for_delivery" role="tab" aria-controls="tab-picked_for_delivery" aria-selected="false">Picked For Delivery</a>
@@ -58,7 +85,7 @@
                                         <a class="nav-link delivered-tab-content" id="delivered-tab" data-toggle="pill" href="#tab-delivered" role="tab" aria-controls="tab-delivered" aria-selected="false">Delivered</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link canceled-tab-content" id="canceled-tab" data-toggle="pill" href="#tab-canceled" role="tab" aria-controls="tab-canceled" aria-selected="false">Canceled</a>
+                                        <a class="nav-link canceled-tab-content" id="canceled-tab" data-toggle="pill" href="#tab-canceled" role="tab" aria-controls="tab-canceled" aria-selected="false">Cancelled</a>
                                     </li>
                                 </ul>
                             </div>
