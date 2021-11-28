@@ -27,7 +27,7 @@ class locationController extends Controller
             die('Not access . Recorded this '); exit();
         }
 
-        $api_url = env('API_BASE_URL')."/api/city";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/city";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
 
@@ -38,7 +38,7 @@ class locationController extends Controller
 
     public function getList()
     {
-        $api_url = env('API_BASE_URL')."/api/location";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/location";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -211,8 +211,11 @@ class locationController extends Controller
 
         $decodedData = json_decode($curlOutput);
 
-        return response()->json( ['responseCode'=>1,'message'=>'Successfully Deleted']);
-
+        if($decodedData->status == 200){
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully updated']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedData->message]);
+        }
 
     }
     /**

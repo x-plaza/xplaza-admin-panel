@@ -112,47 +112,6 @@ class HandleApi {
 		}
 	}
 
-	/**
-	 * @param $type
-	 * @param $license_no
-	 *
-	 * @return bool|mixed
-	 */
-//	public static function getApiData( $type, $license_no ) {
-//		if ( empty( $type ) || empty( $license_no ) ) {
-//			return false;
-//		}
-//
-//		$prp_api_url = '';
-//
-//		if ( $type == 'OFFICE_INFO' ) {
-//			$prp_api_url = env( 'PRP_API_BASE_URL' ) . '/d-api/office-address-info/get-office-info';
-//		} else if ( $type == 'JAMANOT_INFO' ) {
-//			$prp_api_url = env( 'PRP_API_BASE_URL' ) . '/d-api/jamanot-information/get-jamanot-information';
-//		} else if ( $type == 'EMPLOYEE_INFO' ) {
-//			$prp_api_url = env( 'PRP_API_BASE_URL' ) . '/d-api/employee-information/get-employee-information';
-//		}
-//
-//
-//		try {
-//			$method           = 'POST';
-//			$curloptURL       = $prp_api_url;
-//			$response         = self::getCURLResult( $curloptURL, $method, $license_no );
-//			$decoded_response = json_decode( $response, true );
-//
-//			if ( $response && $decoded_response['responseBody']['status'] === 200 ) {
-//				return $decoded_response;
-//			} else {
-//				return false;
-//			}
-//
-//		} catch ( \Exception $e ) {
-//			return false;
-//		}
-//	}
-
-
-
 
 	/**
 	 * @param $curloptURL

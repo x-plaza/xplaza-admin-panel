@@ -82,6 +82,13 @@
                                         </button>
                                         @endif
                                     </div>
+                                    <div class="col-md-6">
+                                        <select class="form-control shop_id_top col-md-8">
+                                            @foreach(Session::get('shopList') as $shop)
+                                                <option value="{{$shop->shop_id}}">{{$shop->shop_name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
 
                             </div>
@@ -188,19 +195,19 @@
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Product Var Type Value</label>
-                        <input name="prodvartype_value" type="text" class="form-control prodvartype_value" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter value">
+                        <input name="prodvartype_value" type="text" class="form-control prodvartype_value" placeholder="Enter value">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Quantity</label>
-                        <input name="quantity" type="text" class="form-control quantity" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter quantity">
+                        <input name="quantity" type="text" class="form-control quantity" onkeyup="this.value=this.value.replace(/[^\d]/,'')" placeholder="Enter quantity">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Buying price</label>
-                        <input name="buying_price" type="text" class="form-control buying_price" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter Buying price">
+                        <input name="buying_price" type="text" class="form-control buying_price"   placeholder="Enter Buying price">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Selling price</label>
-                        <input name="selling_price" type="text" class="form-control selling_price" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter Selling price">
+                        <input name="selling_price" type="text" class="form-control selling_price"  placeholder="Enter Selling price">
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -384,6 +391,8 @@
 
             var image_base64 = '';
             function getItemList() {
+                var shop_id = $('.shop_id_top').val();
+
                 $('#item_list').DataTable({
                     iDisplayLength: 25,
                     processing: true,
@@ -395,7 +404,11 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
                         url: '{{url("item/get-list")}}',
-                        method: 'post'
+                        method: 'post',
+                        data: function (d) {
+                            d._token = $('input[name="_token"]').val();
+                            d.shop_id = shop_id;
+                        }
                     },
                     columns: [
                         {data: 'image', name: 'image', searchable: false,orderable: false},
@@ -411,15 +424,11 @@
 
             getItemList();
 
-            // function getBase64(file) {
-            //     var reader = new FileReader();
-            //     reader.readAsDataURL(file);
-            //     reader.onload = function () {
-            //         image_base64 = reader.result;
-            //         console.log(reader.result);
-            //     };
-            // }
-
+            $(document).on('change', '.shop_id_top', function () {
+                var dataTable = $('#item_list').dataTable();
+                dataTable.fnDestroy();
+                getItemList();
+            })
 
             $(document).on('click', '.store_new_item', function () {
                 $('.add_response_msg_area').empty();
@@ -596,6 +605,7 @@
                 var product_var_type_value = $('.edit_prodvartype_value').val();
                 var item_image = $('.edit_base64_image').val();
                 var item_image_id = $('.edit_image_id').val();
+                var edit_image_name_hidden = $('.edit_image_name_hidden').val();
 
                 if (description == '') {
                     alert("please insert description");
@@ -627,6 +637,7 @@
                         product_var_type_id: product_var_type_id,
                         item_image: item_image,
                         item_image_id: item_image_id,
+                        edit_image_name_hidden: edit_image_name_hidden,
                         product_var_type_value: product_var_type_value
                     },
                     success: function (response) {

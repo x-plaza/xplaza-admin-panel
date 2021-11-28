@@ -9,8 +9,13 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/datatable/dataTables.bootstrap.min.css") }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/datatable/responsive.bootstrap.min.css") }}" />
+    <link rel="stylesheet" href="{{ asset("plugins/datepicker-oss/css/bootstrap-datetimepicker.min.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/plugins/select2/css/select2.min.css") }}" />
 
     <style>
+        .select2-selection__choice{
+            background-color: #0f6674 !important;
+        }
         .paginate_button.previous{
             background-color: #17a2b8;
             color: white;
@@ -52,12 +57,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Location List</h1>
+                        <h1 class="m-0">Delivery Cost List</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Location</li>
+                            <li class="breadcrumb-item active">Delivery Cost</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -73,10 +78,10 @@
                         <div class="card card-primary card-outline">
                             <div class="card-header">
                                 <div class="row">
-                                    <div class="col-md-2 ">
-                                        @if(App\Libraries\AclHandler::hasAccess('Location','add') == true)
+                                    <div class="col-md-4 ">
+                                        @if(App\Libraries\AclHandler::hasAccess('Delivery Cost','add') == true)
                                         <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#add-modal-lg">
-                                            Add Location
+                                            Add Delivery Cost
                                         </button>
                                         @endif
                                     </div>
@@ -87,13 +92,14 @@
 
                                 <div class="delete_response_msg_area"></div>
                                 <div class="table-responsive">
-                                    <table id="location_list"
+                                    <table id="delivery_cost_list"
                                            class="table table-striped table-bordered dt-responsive " cellspacing="0"
                                            width="100%">
                                         <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>City</th>
+                                            <th>Delivery Slab Range</th>
+                                            <th>Cost</th>
+                                            <th>currency</th>
                                             <th>Action</th>
                                         </tr>
                                         </thead>
@@ -118,31 +124,41 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">New Location</h4>
+                    <h4 class="modal-title">New Delivery Cost</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="add_response_msg_area"></div>
+
                     <div class="form-group">
-                        <label for="exampleInputEmail1">City</label>
-                        <select name="city_id" class="form-control city_id">
-                            <option value="">Please select city</option>
-                            @foreach($cities as $city)
-                            <option value="{{$city->id}}">{{$city->name}}</option>
+                        <label for="">Cost</label>
+                        <input name="cost" type="text" class="form-control cost" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter value">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Currency</label>
+                        <select name="currency" class="form-control currency">
+                            <option value="">Please select currency</option>
+                            @foreach($currency_id as $currency)
+                                <option value="{{$currency->id}}">{{$currency->name}}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Location Name</label>
-                        <input name="location_name" type="text" class="form-control location_name" placeholder="Enter Location Name">
+                        <label for="exampleInputEmail1">Start Range</label>
+                        <input name="start_range" type="text" class="form-control start_range"  placeholder="Enter value">
                     </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">End Range</label>
+                        <input name="end_range" type="text" class="form-control end_range"  placeholder="Enter value">
+                    </div>
+
 
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary store_new_location"> <span class="spinner-icon"></span> Save </button>
+                    <button type="button" class="btn btn-primary store_new_discount"> <span class="spinner-icon"></span> Save </button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -155,7 +171,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Edit Location</h4>
+                    <h4 class="modal-title">Edit Delivery Cost</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -168,7 +184,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary update_location"> <span class="spinner-icon"></span> Update </button>
+                    <button type="button" class="btn btn-primary update_delivery_cost"> <span class="spinner-icon"></span> Update </button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -180,9 +196,12 @@
 @section('scripts')
     @include('layouts.admin_common_js')
 
+    <script src="{{ asset("plugins/moment.min.js") }}"></script>
     <script src="{{ asset("admin_src/datatable/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset("admin_src/datatable/dataTables.responsive.min.js") }}"></script>
     <script src="{{ asset("admin_src/datatable/responsive.bootstrap.min.js") }}"></script>
+    <script src="{{ asset("plugins/datepicker-oss/js/bootstrap-datetimepicker.js") }}"></script>
+    <script src="{{ asset("admin_src/plugins/select2/js/select2.full.min.js") }}"></script>
 
     <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>"/>
 
@@ -190,8 +209,22 @@
 
         $(document).ready(function() {
 
-            function getLocationList() {
-                $('#location_list').DataTable({
+            $('.select2').select2()
+
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+
+            var today = new Date();
+            var yyyy = today.getFullYear();
+            var calDate = new Date();
+            calDate.setDate( calDate.getDate() - 20 );
+            $('.coupon_date').datetimepicker({
+                format: 'YYYY-MM-DD'
+            });
+
+            function getProductDiscountList() {
+                $('#delivery_cost_list').DataTable({
                     iDisplayLength: 25,
                     processing: true,
                     serverSide: true,
@@ -201,31 +234,42 @@
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        url: '{{url("location/get-list")}}',
+                        url: '{{url("delivery-cost/get-list")}}',
                         method: 'post'
                     },
                     columns: [
-                        {data: 'name', name: 'name', searchable: true ,orderable: false},
-                        {data: 'city_name', name: 'city_name', searchable: true ,orderable: false},
+                        {data: 'delivery_slab_range', name: 'delivery_slab_range', searchable: true ,orderable: false},
+                        {data: 'cost', name: 'cost', searchable: true ,orderable: false},
+                        {data: 'currency_name', name: 'currency_name', searchable: true ,orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
                     "aaSorting": []
                 });
             }
 
-            getLocationList();
+            getProductDiscountList();
 
-            $(document).on('click', '.store_new_location', function () {
+            $(document).on('click', '.store_new_discount', function () {
                 $('.add_response_msg_area').empty();
-                var city_id = $('.city_id').val();
-                var location_name = $('.location_name').val();
+                var cost = $('.cost').val();
+                var currency = $('.currency').val();
+                var start_range = $('.start_range').val();
+                var end_range = $('.end_range').val();
 
-                if (city_id == '') {
-                    alert("please select country name");
+                if (cost == '') {
+                    alert("please enter cost");
                     return false;
                 }
-                if (location_name == '') {
-                    alert("please insert location name");
+                if (currency == '') {
+                    alert("please insert currency");
+                    return false;
+                }
+                if (start_range == '') {
+                    alert("please insert start range");
+                    return false;
+                }
+                if (end_range == '') {
+                    alert("please insert end range");
                     return false;
                 }
 
@@ -234,15 +278,17 @@
                 $('.spinner-icon').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
 
                 $.ajax({
-                    url: '{{ url('/location/add-new-location') }}',
+                    url: '{{ url('/delivery-cost/add-new-delivery-cost') }}',
                     type: "POST",
                     //dataType: 'json',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: {
-                        city_id: city_id,
-                        location_name: location_name
+                        cost: cost,
+                        currency: currency,
+                        start_range: start_range,
+                        end_range: end_range
                     },
                     success: function (response) {
                         btn.prop('disabled', false);
@@ -254,7 +300,10 @@
                                 '                            </div>');
 
 
-                            $('.location_name').val('');
+                           $('.cost').val('');
+                           $('.currency').val('');
+                           $('.start_range').val('');
+                           $('.end_range').val('');
 
                             $('.alert-success').fadeOut(3000);
 
@@ -262,9 +311,9 @@
                                 $('#add-modal-lg').modal('hide');
                             }, 3200);
 
-                            var dataTable = $('#location_list').dataTable();
+                            var dataTable = $('#delivery_cost_list').dataTable();
                             dataTable.fnDestroy();
-                            getLocationList();
+                            getProductDiscountList();
 
                         } else {
                             $('.add_response_msg_area').html('<div class="alert alert-danger">\n' +
@@ -279,9 +328,9 @@
             });
 
 
-            $(document).on('click', '.open_location_modal', function () {
+            $(document).on('click', '.open_delivery_cost_modal', function () {
 
-                var location_id = jQuery(this).data('location_id');
+                var delivery_cost_id = jQuery(this).data('delivery_cost_id');
 
                 var btn = $(this);
                 btn.prop('disabled', true);
@@ -289,15 +338,16 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ url('/location/get-location-info') }}",
+                    url: "{{ url('/delivery-cost/get-delivery-cost-info') }}",
                     data: {
                         _token: $('input[name="_token"]').val(),
-                        location_id: location_id
+                        delivery_cost_id: delivery_cost_id
                     },
                     success: function (response) {
                         btn.prop('disabled', false);
                         if(response.responseCode == 1){
                             $('.edit_data_content').html(response.html);
+
                             $('#edit-modal-lg').modal();
                         }else{
 
@@ -308,18 +358,28 @@
             });
 
 
-            $(document).on('click', '.update_location', function () {
+            $(document).on('click', '.update_delivery_cost', function () {
                 $('.edit_response_msg_area').empty();
-                var edit_location_id = $('.edit_location_id').val();
-                var edit_city_id = $('.edit_city_id').val();
-                var edit_location_name = $('.edit_location_name').val();
+                var edit_delivery_cost_id = $('.edit_delivery_cost_id').val();
+                var cost = $('.edit_cost').val();
+                var currency = $('.edit_currency').val();
+                var start_range = $('.edit_start_range').val();
+                var end_range = $('.edit_end_range').val();
 
-                if (edit_city_id == '') {
-                    alert("please select city name");
+                if (cost == '') {
+                    alert("please enter cost");
                     return false;
                 }
-                if (edit_location_name == '') {
-                    alert("please insert location name");
+                if (currency == '') {
+                    alert("please insert currency");
+                    return false;
+                }
+                if (start_range == '') {
+                    alert("please insert start range");
+                    return false;
+                }
+                if (end_range == '') {
+                    alert("please insert end range");
                     return false;
                 }
 
@@ -328,16 +388,18 @@
                 $('.spinner-icon').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
 
                 $.ajax({
-                    url: '{{ url('/location/update-location') }}',
+                    url: '{{ url('/delivery-cost/update-delivery-cost') }}',
                     type: "POST",
                     //dataType: 'json',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: {
-                        location_id: edit_location_id,
-                        city_id: edit_city_id,
-                        location_name: edit_location_name
+                        delivery_cost_id: edit_delivery_cost_id,
+                        cost: cost,
+                        currency: currency,
+                        start_range: start_range,
+                        end_range: end_range
                     },
                     success: function (response) {
                         btn.prop('disabled', false);
@@ -354,9 +416,9 @@
                                 $('#edit-modal-lg').modal('hide');
                             }, 3200);
 
-                            var dataTable = $('#location_list').dataTable();
+                            var dataTable = $('#delivery_cost_list').dataTable();
                             dataTable.fnDestroy();
-                            getLocationList();
+                            getProductDiscountList();
 
                         } else {
                             $('.edit_response_msg_area').html('<div class="alert alert-danger">\n' +
@@ -371,14 +433,14 @@
             });
 
 
-            $(document).on('click', '.deleteLocation', function () {
+            $(document).on('click', '.deleteDeliveryCost', function () {
 
                 var result = confirm("Want to delete?");
                 if (!result) {
                     return false;
                 }
 
-                var location_id = jQuery(this).data('location_id');
+                var delivery_cost_id = jQuery(this).data('delivery_cost_id');
 
                 var btn = $(this);
                 btn.prop('disabled', true);
@@ -386,10 +448,10 @@
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "{{ url('/location/delete-location') }}",
+                    url: "{{ url('/delivery-cost/delete-delivery-cost') }}",
                     data: {
                         _token: $('input[name="_token"]').val(),
-                        location_id: location_id
+                        delivery_cost_id: delivery_cost_id
                     },
                     success: function (response) {
                         btn.prop('disabled', false);
@@ -404,9 +466,9 @@
                                 $('#add-modal-lg').modal('hide');
                             }, 3200);
 
-                            var dataTable = $('#location_list').dataTable();
+                            var dataTable = $('#delivery_cost_list').dataTable();
                             dataTable.fnDestroy();
-                            getLocationList();
+                            getProductDiscountList();
                         }else{
                             $('.delete_response_msg_area').html('<div class="alert alert-danger">\n' +
                                 '                                <strong>Error!</strong> ' + response.message + '\n' +

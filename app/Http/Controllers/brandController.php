@@ -35,7 +35,7 @@ class brandController extends Controller
 
     public function getList()
     {
-        $api_url = env('API_BASE_URL')."/api/brand";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/brand";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -96,7 +96,7 @@ class brandController extends Controller
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = env('API_BASE_URL')."/api/brand/add";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/brand/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -140,7 +140,7 @@ class brandController extends Controller
         ];
         $fieldData = json_encode($bodyData);
 
-        $api_url = env('API_BASE_URL')."/api/brand/update";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/brand/update";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $fieldData );
 
         $decodedResp = json_decode($curlOutput);
@@ -169,7 +169,7 @@ class brandController extends Controller
 
         $brand_id = $request->get('brand_id');
 
-        $api_url = env('API_BASE_URL')."/api/brand/".intval($brand_id);
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/brand/".intval($brand_id);
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedData = json_decode($curlOutput);
         $brand_data = isset($decodedData->data) ? $decodedData->data : [];
@@ -201,7 +201,7 @@ class brandController extends Controller
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $api_url = env('API_BASE_URL')."/api/brand/".intval($request->get('brand_id'));
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/brand/".intval($request->get('brand_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
 
         $decodedData = json_decode($curlOutput);

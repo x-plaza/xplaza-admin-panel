@@ -28,12 +28,12 @@ class adminUserController extends Controller
             die('Not access . Recorded this '); exit();
         }
 
-        $api_url = env('API_BASE_URL')."/api/role";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/role";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
         $roles = isset($json_resp->data) ? $json_resp->data : [];
 
-        $api_url = env('API_BASE_URL')."/api/shop?user_id=".Session::get('userId');
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/shop?user_id=".Session::get('userId');
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
         $shops = isset($json_resp->data) ? $json_resp->data : [];
@@ -45,7 +45,7 @@ class adminUserController extends Controller
     public function getList()
     {
 
-        $api_url = env('API_BASE_URL')."/api/adminuser/?user_id=".Session::get('userId');
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/adminuser/?user_id=".Session::get('userId');
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
@@ -140,7 +140,7 @@ class adminUserController extends Controller
         $removedStartClose = str_replace(':"[',':[',$removedSlash);
         $finalData = str_replace(']"',']',$removedStartClose);
 
-        $api_url = env('API_BASE_URL')."/api/adminuser/add";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/adminuser/add";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', $finalData );
 
         $decodedResp = json_decode($curlOutput);
@@ -170,7 +170,7 @@ class adminUserController extends Controller
 
         $user_name = $request->get('user_name');
 
-        $api_url = env('API_BASE_URL')."/api/confirmation-token?username=".$user_name;
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/confirmation-token?username=".$user_name;
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', [] );
 
         $decodedResp = json_decode($curlOutput);
@@ -200,17 +200,17 @@ class adminUserController extends Controller
 
         $admin_id = $request->get('admin_id');
 
-        $api_url = env('API_BASE_URL')."/api/role";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/role";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
         $roles = isset($json_resp->data) ? $json_resp->data : [];
 
-        $api_url = env('API_BASE_URL')."/api/shop?user_id=".Session::get('userId');
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/shop?user_id=".Session::get('userId');
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $json_resp = json_decode($curlOutput);
         $shops = isset($json_resp->data) ? $json_resp->data : [];
 
-        $api_url = env('API_BASE_URL')."/api/adminuser/".intval($admin_id);
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/adminuser/".intval($admin_id);
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedData = json_decode($curlOutput);
         $admin_data = isset($decodedData->data) ? $decodedData->data : [];
@@ -285,7 +285,7 @@ class adminUserController extends Controller
         $removedStartClose = str_replace(':"[',':[',$removedSlash);
         $finalData = str_replace(']"',']',$removedStartClose);
 
-        $api_url = env('API_BASE_URL')."/api/adminuser/update";
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/adminuser/update";
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'PUT', $finalData );
 
         $decodedResp = json_decode($curlOutput);
@@ -314,7 +314,7 @@ class adminUserController extends Controller
             return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
         }
 
-        $api_url = env('API_BASE_URL')."/api/adminuser/".intval($request->get('admin_id'));
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/adminuser/".intval($request->get('admin_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
 
         $decodedData = json_decode($curlOutput);

@@ -25,9 +25,9 @@ class manageOrderController extends Controller
     {
         $date = $request->get('date');
         if (isset($date)){
-            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Pending&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?order_date=".$date."&status=Pending&user_id=".Session::get('userId');
         }else{
-            $api_url = env('API_BASE_URL')."/api/order/?status=Pending&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?status=Pending&user_id=".Session::get('userId');
         }
 
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
@@ -61,7 +61,7 @@ class manageOrderController extends Controller
 
         $order_id = $request->get('order_id');
 
-        $api_url = env('API_BASE_URL')."/api/order/".intval($order_id);
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/".intval($order_id);
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedDataForOrderDetails = json_decode($curlOutputMain);
         $orderDetailsData = $decodedDataForOrderDetails->data;
@@ -92,7 +92,7 @@ class manageOrderController extends Controller
         $status_id = $request->get('status_id');
         $invoice_number = $request->get('invoice_number');
 
-        $api_url = env('API_BASE_URL')."/api/order/status-update?invoice_number=".intval($invoice_number)."&status=".intval($status_id);
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/status-update?invoice_number=".intval($invoice_number)."&status=".intval($status_id);
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'PUT', [] );
         $decodedDataForOrderDetails = json_decode($curlOutputMain);
         if ( isset($decodedDataForOrderDetails->status) && $decodedDataForOrderDetails->status == 200 ) {
@@ -104,14 +104,75 @@ class manageOrderController extends Controller
     }
 
 
+    public function updateOrderQuantity(Request $request)
+    {
+        $rules = [
+            'order_item_quantity'   => 'required',
+            'invoice_number'        => 'required',
+            'order_item_id'         => 'required',
+        ];
+
+
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $order_item_quantity = $request->get('order_item_quantity');
+        $invoice_number = $request->get('invoice_number');
+        $order_item_id = $request->get('order_item_id');
+
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order-items/update?order_item_id=".intval($order_item_id)."&quantity=".intval($order_item_quantity);
+        $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'PUT', [] );
+        $decodedDataForOrderDetails = json_decode($curlOutputMain);
+
+        if ( isset($decodedDataForOrderDetails->status) && $decodedDataForOrderDetails->status == 200 ) {
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully updated']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedDataForOrderDetails->message]);
+        }
+
+    }
+
+
+    public function removeItem(Request $request)
+    {
+        $rules = [
+            'invoice_number'        => 'required',
+            'order_item_id'         => 'required',
+        ];
+
+
+        $validator = Validator::make( $request->all(), $rules );
+        if ( $validator->fails() ) {
+            return response()->json( ['responseCode'=>0,'message'=>'Please fill up required field']);
+        }
+
+        $order_item_quantity = $request->get('order_item_quantity');
+        $invoice_number = $request->get('invoice_number');
+        $order_item_id = $request->get('order_item_id');
+
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order-items/".intval($order_item_id);
+        $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'DELETE', [] );
+        $decodedDataForOrderDetails = json_decode($curlOutputMain);
+
+        if ( isset($decodedDataForOrderDetails->status) && $decodedDataForOrderDetails->status == 200 ) {
+            return response()->json( ['responseCode'=>1,'message'=>'Successfully removed']);
+        }else{
+            return response()->json( ['responseCode'=>0,'message'=>$decodedDataForOrderDetails->message]);
+        }
+
+    }
+
+
     public function confirmedContent(Request $request)
     {
 
         $date = $request->get('date');
         if (isset($date)){
-            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Confirmed&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?order_date=".$date."&status=Confirmed&user_id=".Session::get('userId');
         }else{
-            $api_url = env('API_BASE_URL')."/api/order/?status=Confirmed&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?status=Confirmed&user_id=".Session::get('userId');
         }
 
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
@@ -137,9 +198,9 @@ class manageOrderController extends Controller
     {
         $date = $request->get('date');
         if (isset($date)){
-            $api_url = urlencode(env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Picked%20for%20delivery&user_id=".Session::get('userId'));
+            $api_url = urlencode(env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?order_date=".$date."&status=Picked%20for%20delivery&user_id=".Session::get('userId'));
         }else{
-            $api_url = env('API_BASE_URL')."/api/order/?status=Picked%20for%20delivery&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?status=Picked%20for%20delivery&user_id=".Session::get('userId');
         }
 
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
@@ -167,9 +228,9 @@ class manageOrderController extends Controller
 
         $date = $request->get('date');
         if (isset($date)){
-            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Delivered&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?order_date=".$date."&status=Delivered&user_id=".Session::get('userId');
         }else{
-            $api_url = env('API_BASE_URL')."/api/order/?status=Delivered&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?status=Delivered&user_id=".Session::get('userId');
         }
 
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
@@ -197,9 +258,9 @@ class manageOrderController extends Controller
 
         $date = $request->get('date');
         if (isset($date)){
-            $api_url = env('API_BASE_URL')."/api/order/?order_date=".$date."&status=Cancelled&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?order_date=".$date."&status=Cancelled&user_id=".Session::get('userId');
         }else{
-            $api_url = env('API_BASE_URL')."/api/order/?status=Cancelled&user_id=".Session::get('userId');
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/?status=Cancelled&user_id=".Session::get('userId');
         }
 
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );

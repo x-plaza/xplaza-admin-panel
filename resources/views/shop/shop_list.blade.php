@@ -445,7 +445,9 @@
                             dataTable.fnDestroy();
                             getShopList();
                         }else{
-
+                            $('.delete_response_msg_area').html('<div class="alert alert-danger">\n' +
+                                '                                <strong>Error!</strong> ' + response.message + '\n' +
+                                '                            </div>');
                         }
                     }
                 });

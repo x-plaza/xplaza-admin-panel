@@ -32,7 +32,7 @@ class forgotPassController extends Controller
 
         $user_name = $request->get('user_name');
 
-        $api_url = env('API_BASE_URL')."/api/login/send-otp?username=".$user_name;
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/login/send-otp?username=".$user_name;
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', [] );
 
         $decodedResp = json_decode($curlOutput);
@@ -68,7 +68,7 @@ class forgotPassController extends Controller
             return response()->json( ['responseCode'=>0,'message'=>'Confirm password does not match']);
         }
 
-        $api_url = env('API_BASE_URL')."/api/login/validate-otp?OTP=".$otp_code."&username=".$user_name;
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/login/validate-otp?OTP=".$otp_code."&username=".$user_name;
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', [] );
         $decodedResp = json_decode($curlOutput);
 
@@ -76,7 +76,7 @@ class forgotPassController extends Controller
             return response()->json( ['responseCode'=>0,'message'=>$decodedResp->message]);
         }
 
-        $change_pass_api_url = env('API_BASE_URL')."/api/login/change-password?newPassword=".$new_password."&username=".$user_name;
+        $change_pass_api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/login/change-password?newPassword=".$new_password."&username=".$user_name;
         $change_pass_curlOutput  = HandleApi::getCURLOutput( $change_pass_api_url, 'POST', [] );
 
         $change_pass_decodedResp = json_decode($change_pass_curlOutput);

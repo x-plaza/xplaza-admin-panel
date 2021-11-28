@@ -94,6 +94,8 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
     Route::post('/order/get-canceled-list', 'manageOrderController@canceledContent');
     Route::post('/order/get-order-details', 'manageOrderController@orderDetails');
     Route::post('/order/update-status', 'manageOrderController@updateStatus');
+    Route::post('/order/update-item-quantity', 'manageOrderController@updateOrderQuantity');
+    Route::post('/order/remove-item', 'manageOrderController@removeItem');
 
 
     Route::get('/coupon/list', 'couponController@couponList');
@@ -102,6 +104,27 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
     Route::post('/coupon/get-coupon-info', 'couponController@couponInfo');
     Route::post('/coupon/delete-coupon', 'couponController@deleteCoupon');
     Route::post('/coupon/update-coupon', 'couponController@updateCoupon');
+
+    Route::get('/product-discount/list', 'productDiscountController@productDiscountList');
+    Route::post('/product-discount/get-list', 'productDiscountController@getList');
+    Route::post('/product-discount/add-new-product-discount', 'productDiscountController@store');
+    Route::post('/product-discount/get-product-discount-info', 'productDiscountController@productDiscountInfo');
+    Route::post('/product-discount/delete-product-discount', 'productDiscountController@deleteProductDiscount');
+    Route::post('/product-discount/update-product-discount', 'productDiscountController@updateProductDiscount');
+
+    Route::get('/delivery-cost/list', 'deliveryCostController@deliveryCostList');
+    Route::post('/delivery-cost/get-list', 'deliveryCostController@getList');
+    Route::post('/delivery-cost/add-new-delivery-cost', 'deliveryCostController@store');
+    Route::post('/delivery-cost/get-delivery-cost-info', 'deliveryCostController@deliveryCostInfo');
+    Route::post('/delivery-cost/delete-delivery-cost', 'deliveryCostController@deleteDeliveryCost');
+    Route::post('/delivery-cost/update-delivery-cost', 'deliveryCostController@updateDeliveryCost');
+
+    Route::get('/delivery-schedule/list', 'deliveryScheduleController@deliveryScheduleList');
+    Route::post('/delivery-schedule/get-list', 'deliveryScheduleController@getList');
+    Route::post('/delivery-schedule/add-new-delivery-schedule', 'deliveryScheduleController@store');
+    Route::post('/delivery-schedule/get-delivery-schedule-info', 'deliveryScheduleController@deliveryScheduleInfo');
+    Route::post('/delivery-schedule/delete-delivery-schedule', 'deliveryScheduleController@deleteDeliverySchedule');
+    Route::post('/delivery-schedule/update-delivery-schedule', 'deliveryScheduleController@updateDeliverySchedule');
 
     Route::get('/user/profile', 'usersController@index');
     Route::post('/user/change-password', 'usersController@changePassword');
