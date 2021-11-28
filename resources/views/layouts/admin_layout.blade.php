@@ -7,7 +7,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ecom-Xplaza</title>
+    <title>xwinkel</title>
 
     @section('styles')
     @show
@@ -121,8 +121,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="{{url('/home')}}" class="brand-link">
-            <img src="{{asset('admin_src/dist/img/AdminLTELogo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-            <span class="brand-text font-weight-light">Ecom-Xplaza</span>
+{{--            <img src="{{asset('admin_src/dist/img/AdminLTELogo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">--}}
+            <span class="brand-text font-weight-light">Xwinkel</span>
         </a>
 
         <!-- Sidebar -->
@@ -243,7 +243,30 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </a>
                         </li>
                     @endif
-
+                    @if(App\Libraries\AclHandler::hasAccess('Product Discount','full') == true)
+                        <li class="nav-item">
+                            <a href="{{url('/product-discount/list')}}" class="nav-link {{ (Request::is('product-discount/*') ? 'active' : '') }}">
+                                <i class="nav-icon fas fa-list"></i>
+                                <p>Product Discount</p>
+                            </a>
+                        </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('Delivery Cost','full') == true)
+                        <li class="nav-item">
+                            <a href="{{url('/delivery-cost/list')}}" class="nav-link {{ (Request::is('delivery-cost/*') ? 'active' : '') }}">
+                                <i class="nav-icon fas fa-list"></i>
+                                <p>Delivery Cost</p>
+                            </a>
+                        </li>
+                    @endif
+                    @if(App\Libraries\AclHandler::hasAccess('Delivery Schedule','full') == true)
+                    <li class="nav-item">
+                        <a href="{{url('/delivery-schedule/list')}}" class="nav-link {{ (Request::is('delivery-schedule/*') ? 'active' : '') }}">
+                            <i class="nav-icon fas fa-list"></i>
+                            <p>Delivery Schedule</p>
+                        </a>
+                    </li>
+                    @endif
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->
@@ -260,10 +283,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <footer class="main-footer">
         <!-- To the right -->
         <div class="float-right d-none d-sm-inline">
-            Anything you want
+
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2014-2021 <a href="">Ecom-Xplaza</a>.</strong> All rights reserved.
+        <strong>Copyright &copy;{{date('Y')}} <a href="">Xwinkel</a>.</strong> All rights reserved.
     </footer>
 </div>
 <!-- ./wrapper -->

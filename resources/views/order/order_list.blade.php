@@ -122,7 +122,7 @@
 
 
     <!-- Order Details Modal -->
-    <div class="modal fade" id="pending-order-modal-lg">
+    <div class="modal fade" id="pending-order-modal-xl">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -172,7 +172,7 @@
              //   viewMode: 'years',
                 format: 'DD-MM-YYYY',
                 maxDate: (new Date()),
-                minDate: calDate
+              //  minDate: calDate
             });
             $('.pending_datepicker').val('');
 
@@ -223,6 +223,7 @@
 
             $(document).on('click', '.view_order_details', function () {
 
+                $('.order_status_update_msg').html('');
                 var order_id = jQuery(this).data('order_id');
 
                 var btn = $(this);
@@ -240,7 +241,7 @@
                         btn.prop('disabled', false);
                         if(response.responseCode == 1){
                             $('.pending_order_details_data_content').html(response.html);
-                            $('#pending-order-modal-lg').modal();
+                            $('#pending-order-modal-xl').modal();
                         }else{
                             alert(response.message);
                         }
@@ -255,7 +256,7 @@
                 //   viewMode: 'years',
                 format: 'DD-MM-YYYY',
                 maxDate: (new Date()),
-                minDate: calDate
+              //  minDate: calDate
             });
             $('.confirmed_datepicker').val('');
 
@@ -307,7 +308,7 @@
                 //   viewMode: 'years',
                 format: 'DD-MM-YYYY',
                 maxDate: (new Date()),
-                minDate: calDate
+               // minDate: calDate
             });
             $('.picked_for_delivery_datepicker').val('');
 
@@ -361,7 +362,7 @@
                 //   viewMode: 'years',
                 format: 'DD-MM-YYYY',
                 maxDate: (new Date()),
-                minDate: calDate
+               // minDate: calDate
             });
             $('.delivered_datepicker').val('');
 
@@ -413,7 +414,7 @@
                 //   viewMode: 'years',
                 format: 'DD-MM-YYYY',
                 maxDate: (new Date()),
-                minDate: calDate
+              //  minDate: calDate
             });
             $('.canceled_datepicker').val('');
 
@@ -487,7 +488,7 @@
 
                             setTimeout(function () {
                                 $('.order_status_update_msg').html('');
-                                $('#pending-order-modal-lg').modal('hide');
+                                $('#pending-order-modal-xl').modal('hide');
                             }, 3200);
 
                             if (current_status_id == 1){
@@ -515,7 +516,95 @@
 
                         }else{
                             $('.order_status_update_msg').html('<div class="alert alert-danger">\n' +
+                                '                                <strong>Error!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+                        }
+                    }
+                });
+            })
+
+            //***************************************************
+
+            $(document).on('click', '.order_item_update', function () {
+
+                var result = confirm("Want to update?");
+                if (!result) {
+                    return false;
+                }
+
+                var invoice_number =$('.invoice_number').val();
+                var order_item_id  = jQuery(this).data('item_id');
+                var order_item_quantity  = jQuery(this).closest('tr').find('.order_item_quantity').val();
+
+                jQuery(this).closest('tr').find('.order_item_update').prop('disabled', true);
+                jQuery(this).closest('tr').find('.loading_add').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+
+                $.ajax({
+                    type: "POST",
+                    //  dataType: "json",
+                    url: "{{url("/order/update-item-quantity")}}",
+                    data: {
+                        _token: $('input[name="_token"]').val(),
+                        invoice_number: invoice_number,
+                        order_item_id: order_item_id,
+                        order_item_quantity: order_item_quantity
+                    },
+                    success: function (response) {
+                        $('.order_item_update').prop('disabled', false);
+                        $('.loading_add').html('');
+
+                        if(response.responseCode == 1){
+                            $('.order_status_update_msg').html('<div class="alert alert-success">\n' +
                                 '                                <strong>Success!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+
+
+                        }else{
+                            $('.order_status_update_msg').html('<div class="alert alert-danger">\n' +
+                                '                                <strong>Error!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+                        }
+                    }
+                });
+            })
+
+            $(document).on('click', '.item_remove_btn', function () {
+
+                var result = confirm("Want to delete?");
+                if (!result) {
+                    return false;
+                }
+
+                var invoice_number =$('.invoice_number').val();
+                var order_item_id  = jQuery(this).data('item_id');
+
+                var tbl = $(this);
+                jQuery(this).closest('tr').find('.item_remove_btn').prop('disabled', true);
+                jQuery(this).closest('tr').find('.loading_remove').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+
+                $.ajax({
+                    type: "POST",
+                    //  dataType: "json",
+                    url: "{{url("/order/remove-item")}}",
+                    data: {
+                        _token: $('input[name="_token"]').val(),
+                        invoice_number: invoice_number,
+                        order_item_id: order_item_id
+                    },
+                    success: function (response) {
+                        $('.item_remove_btn').prop('disabled', false);
+                        $('.loading_remove').html('');
+
+                        if(response.responseCode == 1){
+                            tbl.parents('tr').remove();
+                            $('.order_status_update_msg').html('<div class="alert alert-success">\n' +
+                                '                                <strong>Success!</strong> ' + response.message + '\n' +
+                                '                            </div>');
+
+
+                        }else{
+                            $('.order_status_update_msg').html('<div class="alert alert-danger">\n' +
+                                '                                <strong>Error!</strong> ' + response.message + '\n' +
                                 '                            </div>');
                         }
                     }

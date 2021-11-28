@@ -10,8 +10,12 @@
     <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/datatable/dataTables.bootstrap.min.css") }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/datatable/responsive.bootstrap.min.css") }}" />
     <link rel="stylesheet" href="{{ asset("plugins/datepicker-oss/css/bootstrap-datetimepicker.min.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset("admin_src/plugins/select2/css/select2.min.css") }}" />
 
     <style>
+        .select2-selection__choice{
+            background-color: #0f6674 !important;
+        }
         .paginate_button.previous{
             background-color: #17a2b8;
             color: white;
@@ -96,6 +100,8 @@
                                             <th>Code</th>
                                             <th>Amount</th>
                                             <th>Max_amount</th>
+                                            <th>Start date</th>
+                                            <th>End date</th>
                                             <th>Currency</th>
                                             <th>Discount_type</th>
                                             <th>Action</th>
@@ -129,9 +135,18 @@
                 </div>
                 <div class="modal-body">
                     <div class="add_response_msg_area"></div>
+
+                    <div class="form-group">
+                        <label for="">Shop</label>
+                        <select class="select2 shop_id" name="shop_id" multiple="multiple" data-placeholder="Select shop" style="width: 100%;">
+                            @foreach($shops as $shop)
+                                <option value="{{$shop->shop_id}}">{{$shop->shop_name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Amount</label>
-                        <input name="amount" type="text" class="form-control amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter amount">
+                        <input name="amount" type="text" class="form-control amount" placeholder="Enter amount">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Coupon code</label>
@@ -163,9 +178,13 @@
                         <label for="exampleInputEmail1">End date</label>
                         <input name="end_date" type="text" class="form-control end_date coupon_date" placeholder="Enter end_date">
                     </div>
+                    <div class="form-group max_discount_type_section" style="display: none;">
+                        <label for="exampleInputEmail1">Max Discount Amount</label>
+                        <input name="max_amount" type="text" class="form-control max_amount" placeholder="Enter max_amount">
+                    </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Max Amount</label>
-                        <input name="max_amount" type="text" class="form-control max_amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter max_amount">
+                        <label for="exampleInputEmail1">Min Shopping Amount</label>
+                        <input name="min_amount" type="text" value="" class="form-control min_amount" placeholder="Enter min amount">
                     </div>
 
                 </div>
@@ -214,6 +233,7 @@
     <script src="{{ asset("admin_src/datatable/dataTables.responsive.min.js") }}"></script>
     <script src="{{ asset("admin_src/datatable/responsive.bootstrap.min.js") }}"></script>
     <script src="{{ asset("plugins/datepicker-oss/js/bootstrap-datetimepicker.js") }}"></script>
+    <script src="{{ asset("admin_src/plugins/select2/js/select2.full.min.js") }}"></script>
 
     <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>"/>
 
@@ -221,6 +241,11 @@
 
         $(document).ready(function() {
 
+            $('.select2').select2()
+
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
 
             var today = new Date();
             var yyyy = today.getFullYear();
@@ -252,6 +277,8 @@
                         {data: 'coupon_code', name: 'coupon_code', searchable: true ,orderable: false},
                         {data: 'amount', name: 'amount', searchable: true ,orderable: false},
                         {data: 'max_amount', name: 'max_amount', searchable: true ,orderable: false},
+                        {data: 'start_date', name: 'start_date', searchable: true ,orderable: false},
+                        {data: 'end_date', name: 'end_date', searchable: true ,orderable: false},
                         {data: 'currency_name', name: 'currency_name', searchable: true ,orderable: false},
                         {data: 'discount_type_name', name: 'discount_type_name', searchable: true ,orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
@@ -262,9 +289,28 @@
 
             getCouponList();
 
+            $(document).on('change', '.discount_type', function () {
+                var discount_type = $('.discount_type').val();
+                if(parseInt(discount_type) == 2){
+                    $('.max_discount_type_section').css('display', 'block');
+                }else {
+                    $('.max_discount_type_section').css('display', 'none')
+                }
+            });
+
+            $(document).on('change', '.edit_discount_type', function () {
+                var discount_type = $('.edit_discount_type').val();
+                if(parseInt(discount_type) == 2){
+                    $('.max_discount_type_section').css('display', 'block');
+                }else {
+                    $('.max_discount_type_section').css('display', 'none')
+                }
+            });
+
             $(document).on('click', '.store_new_coupon', function () {
                 $('.add_response_msg_area').empty();
                 var amount = $('.amount').val();
+                var shop_id = $('.shop_id').select2("val");
                 var coupon_code = $('.coupon_code').val();
                 var currency = $('.currency').val();
                 var discount_type = $('.discount_type').val();
@@ -278,7 +324,7 @@
                     return false;
                 }
                 if (coupon_code == '') {
-                    alert("please insert coupon_code");
+                    alert("please insert coupon code");
                     return false;
                 }
                 if (currency == '') {
@@ -286,19 +332,23 @@
                     return false;
                 }
                 if (discount_type == '') {
-                    alert("please insert discount_type");
+                    alert("please insert discount type");
                     return false;
                 }
                 if (start_date == '') {
-                    alert("please insert start_date");
+                    alert("please insert start date");
                     return false;
                 }
                 if (end_date == '') {
-                    alert("please insert end_date");
+                    alert("please insert end date");
                     return false;
                 }
-                if (max_amount == '') {
-                    alert("please insert max_amount");
+                // if (max_amount == '') {
+                //     alert("please insert max amount");
+                //     return false;
+                // }
+                if (shop_id == '') {
+                    alert("please insert shop");
                     return false;
                 }
 
@@ -321,6 +371,7 @@
                         start_date: start_date,
                         end_date: end_date,
                         max_amount: max_amount,
+                        shop_id: shop_id,
                         is_active: is_active
                     },
                     success: function (response) {
@@ -386,6 +437,10 @@
                             $('.coupon_date').datetimepicker({
                                 format: 'YYYY-MM-DD'
                             });
+                            $('.select2').select2()
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
                             $('#edit-modal-lg').modal();
                         }else{
 
@@ -405,7 +460,9 @@
                 var edit_discount_type = $('.edit_discount_type').val();
                 var edit_start_date = $('.edit_start_date').val();
                 var edit_end_date = $('.edit_end_date').val();
+                var edit_shop_id = $('.edit_shop_id').select2("val");
                 var edit_max_amount = $('.edit_max_amount').val();
+                var edit_min_amount = $('.edit_min_amount').val();
                 var edit_is_active = true;
 
                 if (edit_amount == '') {
@@ -421,19 +478,23 @@
                     return false;
                 }
                 if (edit_discount_type == '') {
-                    alert("please insert discount_type");
+                    alert("please insert discount type");
                     return false;
                 }
                 if (edit_start_date == '') {
-                    alert("please insert start_date");
+                    alert("please insert start date");
                     return false;
                 }
                 if (edit_end_date == '') {
-                    alert("please insert end_date");
+                    alert("please insert end date");
                     return false;
                 }
-                if (edit_max_amount == '') {
-                    alert("please insert max_amount");
+                // if (edit_max_amount == '') {
+                //     alert("please insert max amount");
+                //     return false;
+                // }
+                if (edit_shop_id == '') {
+                    alert("please insert shop");
                     return false;
                 }
 
@@ -455,8 +516,10 @@
                         currency: edit_currency,
                         discount_type: edit_discount_type,
                         start_date: edit_start_date,
+                        shop_id: edit_shop_id,
                         end_date: edit_end_date,
                         max_amount: edit_max_amount,
+                        min_amount: edit_min_amount,
                         is_active: edit_is_active
                     },
                     success: function (response) {

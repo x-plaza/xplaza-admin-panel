@@ -39,7 +39,7 @@ class homeController extends Controller
     {
         try {
 
-            $api_url = env('API_BASE_URL')."/api/dashboard?shop_id=".intval($request->get('shop_id'));
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/dashboard?shop_id=".intval($request->get('shop_id'));
             $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', [] );
             $decodedData = json_decode($curlOutput);
             $shop_data = isset($decodedData->data) ? $decodedData->data : [];

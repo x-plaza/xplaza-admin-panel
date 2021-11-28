@@ -70,9 +70,10 @@
             <!-- /.social-auth-links -->
 
             <p class="mb-1">
-                <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#add-modal-md">
-                    Forgot Password
-                </button>
+                <a href="#" data-toggle="modal" data-target="#add-modal-md"> Forgot Password ?</a>
+{{--                <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#add-modal-md">--}}
+{{--                    Forgot Password--}}
+{{--                </button>--}}
             </p>
 
 

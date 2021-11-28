@@ -14,6 +14,7 @@
 <div class="form-group">
     <label for="exampleInputEmail1">Item Image</label>
     <input type="hidden" name="edit_base64_image" class="form-control edit_base64_image">
+    <input type="hidden" name="edit_image_name_hidden" class="form-control edit_image_name_hidden" value="{{$image_url}}">
     <input type="file" name="edit_item_image" class="form-control edit_item_image" onchange="encodeImgtoBase64ForEdit(this)">
 </div>
 
@@ -68,7 +69,7 @@
 </div>
 <div class="form-group">
     <label for="exampleInputEmail1">Product Var Type Value</label>
-    <input name="edit_prodvartype_value" type="text" class="form-control edit_prodvartype_value" value="{{$itemInfo->product_var_type_value}}" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  placeholder="Enter value">
+    <input name="edit_prodvartype_value" type="text" class="form-control edit_prodvartype_value" value="{{$itemInfo->product_var_type_value}}"  placeholder="Enter value">
 </div>
 <div class="form-group">
     <label for="exampleInputEmail1">Quantity</label>
@@ -76,9 +77,9 @@
 </div>
 <div class="form-group">
     <label for="exampleInputEmail1">Buying price</label>
-    <input name="buying_price" type="text" class="form-control edit_buying_price" onkeyup="this.value=this.value.replace(/[^\d]/,'')"  value="{{$itemInfo->buying_price}}" placeholder="Enter Buying price">
+    <input name="buying_price" type="text" class="form-control edit_buying_price"   value="{{$itemInfo->buying_price}}" placeholder="Enter Buying price">
 </div>
 <div class="form-group">
     <label for="exampleInputEmail1">Selling price</label>
-    <input name="selling_price" type="text" class="form-control edit_selling_price" onkeyup="this.value=this.value.replace(/[^\d]/,'')"   value="{{$itemInfo->selling_price}}" placeholder="Enter Selling price">
+    <input name="selling_price" type="text" class="form-control edit_selling_price" value="{{$itemInfo->selling_price}}" placeholder="Enter Selling price">
 </div>

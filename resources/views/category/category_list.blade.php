@@ -92,6 +92,7 @@
                                         <thead>
                                         <tr>
                                             <th>Name</th>
+                                            <th>Parent</th>
                                             <th>Description</th>
                                             <th>Action</th>
                                         </tr>
@@ -129,7 +130,9 @@
                         <select name="parent_category" class="form-control parent_category">
                             <option value="">Please select parent</option>
                             @foreach($categories as $category)
+                                @if($category->parent_category_id == 0)
                                 <option value="{{$category->id}}">{{$category->name}}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -206,6 +209,7 @@
                     },
                     columns: [
                         {data: 'name', name: 'name', searchable: true,orderable: false},
+                        {data: 'parent_category_name', name: 'parent_category_name', searchable: true,orderable: false},
                         {data: 'description', name: 'description', searchable: true,orderable: false},
                         {data: 'action', name: 'action', orderable: false, searchable: false}
                     ],
@@ -413,7 +417,9 @@
                             dataTable.fnDestroy();
                             getCategoryList();
                         }else{
-
+                            $('.delete_response_msg_area').html('<div class="alert alert-danger">\n' +
+                                '                                <strong>Error!</strong> ' + response.message + '\n' +
+                                '                            </div>');
                         }
                     }
                 });

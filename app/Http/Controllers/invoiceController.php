@@ -16,7 +16,7 @@ class invoiceController extends Controller
     public function index($order_id)
     {
 
-        $api_url = env('API_BASE_URL')."/api/order/".intval($order_id);
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/order/".intval($order_id);
         $curlOutputMain  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
         $decodedDataForOrderDetails = json_decode($curlOutputMain);
         $orderDetailsData = $decodedDataForOrderDetails->data;
@@ -59,9 +59,11 @@ class invoiceController extends Controller
                     <table width="100%">
                         <tr>
                             <td width="50%"><i style="font-size: 10px;">Download time: {DATE j-M-Y h:i a}</i></td>
+                            <td width="30%"></td>
+                            <td width="20%"><i style="font-size: 10px;float: right">www.xwinkel.com</i></td>
                         </tr>
                     </table>');
-        $stylesheet = file_get_contents(public_path().'/admin_src/pdf_style.css');
+        $stylesheet = file_get_contents('admin_src/pdf_style.css');
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->setAutoBottomMargin = 'stretch';
 
@@ -72,8 +74,9 @@ class invoiceController extends Controller
         $mpdf->defaultfooterfontstyle = 'B';
         $mpdf->defaultfooterline = 0;
 
+        $invoice = 'INVGEN'.$orderDetailsData->invoice_number;
         $mpdf->SetCompression(true);
-        $mpdf->Output( 'invoice.pdf', 'I');
+        $mpdf->Output( 'invoice_'.$invoice.'.pdf', 'I');
     }
 
     /**

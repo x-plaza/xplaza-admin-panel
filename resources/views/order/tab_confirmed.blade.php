@@ -1,5 +1,5 @@
 <div class="input-group col-md-3" >
-    <input type="max_date" class="confirmed_datepicker form-control" placeholder="Click here to set date" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    <input type="max_date" class="confirmed_datepicker form-control" placeholder="Search order by date" aria-label="Default" aria-describedby="inputGroup-sizing-default">
     <div class="input-group-prepend">
         <button class="btn btn-info confirmed_search"> <i class="fa fa-search"></i> Search </button>
     </div>
