@@ -107,6 +107,7 @@ Route::group(array('middleware' => ['authAndAcl']), function() {
 
     Route::get('/product-discount/list', 'productDiscountController@productDiscountList');
     Route::post('/product-discount/get-list', 'productDiscountController@getList');
+    Route::post('/product-discount/get-product-list', 'productDiscountController@getProductList');
     Route::post('/product-discount/add-new-product-discount', 'productDiscountController@store');
     Route::post('/product-discount/get-product-discount-info', 'productDiscountController@productDiscountInfo');
     Route::post('/product-discount/delete-product-discount', 'productDiscountController@deleteProductDiscount');

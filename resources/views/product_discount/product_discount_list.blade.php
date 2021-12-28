@@ -136,12 +136,22 @@
                     <div class="add_response_msg_area"></div>
 
                     <div class="form-group">
+                        <label for="Shop">Shop</label>
+                        <select name="shop_id_show_only" class="form-control shop_id_show_only">
+                            <option value="">Please select shop</option>
+                            @foreach($shopData as $data)
+                                <option value="{{$data->id}}">{{$data->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="shop_loading"></div>
+                    <div class="form-group">
                         <label for="">Product</label>
                         <select name="product" class="form-control select2bs4 product_id" style="width: 100%;height: 20px !important;">
                             <option value="">Please select product</option>
-                            @foreach($productData as $product)
-                                <option value="{{$product->id}}">{{$product->name}}</option>
-                            @endforeach
+{{--                            @foreach($productData as $product)--}}
+{{--                                <option value="{{$product->id}}">{{$product->name}}</option>--}}
+{{--                            @endforeach--}}
                         </select>
                     </div>
                     <div class="form-group">
@@ -533,6 +543,39 @@
                 });
 
             });
+
+            $(document).on('change', '.shop_id_show_only', function () {
+
+                var shop_id = $('.shop_id_show_only').val();
+                $('.shop_loading').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading ......');
+                $.ajax({
+                    url: '{{ url('/product-discount/get-product-list') }}',
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: {shop_id: shop_id},
+                    success: function (data) {
+                        $('.shop_loading').html('');
+                        $('.product_id').empty();
+
+                        if (data.responseCode == 1) {
+                            $.each(data.product, function (i, d) {
+                                $('.product_id').append($('<option>', {
+                                    value: d.id,
+                                    text: d.name
+                                }));
+                            });
+                        } else {
+                            $('.product_id').append($('<option>', {
+                                value: '',
+                                text: 'No product'
+                            }));
+                        }
+
+                    }
+                });
+            })
 
         });
 

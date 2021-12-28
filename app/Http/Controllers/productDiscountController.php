@@ -38,16 +38,43 @@ class productDiscountController extends Controller
         $json_resp_currency_id = json_decode($curlOutput_currency_id);
         $currency_id = isset($json_resp_currency_id->data) ? $json_resp_currency_id->data : [];
 
-        $api_url = env('API_BASE_URL')."/api/product?user_id=".Session::get('userId');;
-        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
-        $decodedData = json_decode($curlOutput);
-        $productData = isset($decodedData->data) ? $decodedData->data : [];
+//        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/product?user_id=".Session::get('userId');;
+//        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+//        $decodedData = json_decode($curlOutput);
+//        $productData = isset($decodedData->data) ? $decodedData->data : [];
+
+        $shop_api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/shop?user_id=".Session::get('userId');
+        $shopCurlOutput  = HandleApi::getCURLOutput( $shop_api_url, 'GET', [] );
+        $shop_json_resp = json_decode($shopCurlOutput);
+        $shopData = isset($shop_json_resp->data) ? $shop_json_resp->data : [];
 
         $shops = Session::get('shopList');
 
-        return view('product_discount.product_discount_list',compact('discount_type','currency_id','shops','productData'));
+        return view('product_discount.product_discount_list',compact('discount_type','currency_id','shops','shopData'));
     }
 
+    public function getProductList(Request $request)
+    {
+        $shop_id = $request->get('shop_id');
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/product/by-shop?shop_id=".intval($shop_id);
+        $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
+        $decodedData = json_decode($curlOutput);
+        $product_data = isset($decodedData->data) ? $decodedData->data : [];
+
+        $filteredArray = [];
+        foreach ($product_data as $data){
+            $subData = [];
+            $subData['id'] = $data->id;
+            $subData['name'] = $data->name;
+            $filteredArray[] = $subData;
+        }
+
+        if(count($filteredArray) == 0){
+            return response()->json(['responseCode' => 2, 'product' => $filteredArray]);
+        }
+
+        return response()->json(['responseCode' => 1, 'product' => $filteredArray]);
+    }
 
     public function getList()
     {
