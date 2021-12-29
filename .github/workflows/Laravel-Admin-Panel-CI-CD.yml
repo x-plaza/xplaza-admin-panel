@@ -42,8 +42,8 @@ jobs:
       - name: Laravel Deploy
         uses: ngocquyhoang/laravel-deploy@laravel-custom-port
         with:
-          user: ${{ secrets.SSH_USER }
+          user: ${{ secrets.SSH_USER }}
           pass: ${{ secrets.SSH_PASSWORD }}
           host: ${{ secrets.HOST }}
-          path: ${{ secrets.PATH }
-          owner: ${{ secrets.OWNER }
+          path: ${{ secrets.PATH }}
+          owner: ${{ secrets.OWNER }}
