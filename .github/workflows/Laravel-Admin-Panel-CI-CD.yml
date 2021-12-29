@@ -36,7 +36,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy the project file to the remote server
-    needs: test
     steps:
       - uses: actions/checkout@v2
       - name: Laravel Deploy
