@@ -2,9 +2,9 @@ name: Admin Panel Laravel CI/CD
 
 on:
   push:
-    branches: [ server-deploy ]
+    branches: [ xwinkel ]
   pull_request:
-    branches: [ server-deploy ]
+    branches: [ xwinkel ]
 
 jobs:
 
