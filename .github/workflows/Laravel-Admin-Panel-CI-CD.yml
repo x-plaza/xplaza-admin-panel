@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Laravel Deploy
-        uses: ngocquyhoang/laravel-deploy@laravel-custom-port
+        uses: ngocquyhoang/laravel-deploy@44ec6bf06ce9f68f68f614033fb57a8851f60b53
         with:
           user: ${{ secrets.SSH_USER }}
           host: ${{ secrets.HOST }}
