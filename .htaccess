@@ -3,14 +3,11 @@
         Options -MultiViews -Indexes
     </IfModule>
 
-    RewriteEngine on
-
+    RewriteEngine On
+    
     # serve existing files in the /public folder as if they were in /
     RewriteCond %{DOCUMENT_ROOT}public%{REQUEST_URI} -f
     RewriteRule (.+) /public/$1 [L]
-
-    # route everything else to /public/index.php
-    RewriteRule ^ /public/index.php [L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -24,5 +21,8 @@
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
+    #RewriteRule ^ index.php [L]
+    
+    # route everything else to /public/index.php
     RewriteRule ^ /public/index.php [L]
 </IfModule>
