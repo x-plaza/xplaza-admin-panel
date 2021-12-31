@@ -28,7 +28,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd ${{ secrets.PATH }} && composer install && find . -type f -exec chmod 644 {} \; && find . -type d -exec chmod 755 {} \; && chmod 755 public/item_image &
+            cd ${{ secrets.PATH }} && composer install && find . -type f -exec chmod 644 {} \; && find . -type d -exec chmod 755 {} \; && find public/item_image -type f -exec chmod 755 {} \; &
           host: ${{ secrets.HOST }}
           user: ${{ secrets.SSH_USER }}
           pass: ${{ secrets.SSH_PASSWORD }}
