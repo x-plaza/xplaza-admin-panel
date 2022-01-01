@@ -37,10 +37,10 @@ class manageOrderController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('invoice_number', function ($data) {
-                return 'INVGEN'.$data->invoice_number;
+                return $data->invoice_number;
             })
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->order_id . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
            // ->removeColumn('id')
@@ -182,10 +182,10 @@ class manageOrderController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('invoice_number', function ($data) {
-                return 'INVGEN'.$data->invoice_number;
+                return $data->invoice_number;
             })
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->order_id . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
           //  ->removeColumn('id')
@@ -210,10 +210,10 @@ class manageOrderController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('invoice_number', function ($data) {
-                return 'INVGEN'.$data->invoice_number;
+                return $data->invoice_number;
             })
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->order_id . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
             //  ->removeColumn('id')
@@ -240,10 +240,10 @@ class manageOrderController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('invoice_number', function ($data) {
-                return 'INVGEN'.$data->invoice_number;
+                return $data->invoice_number;
             })
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->order_id . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
           //  ->removeColumn('id')
@@ -270,10 +270,10 @@ class manageOrderController extends Controller
 
         return Datatables::of(collect($data))
             ->addColumn('invoice_number', function ($data) {
-                return 'INVGEN'.$data->invoice_number;
+                return $data->invoice_number;
             })
             ->addColumn('action', function ($data) {
-                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->invoice_number . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
+                $action = '<button type="button" class="btn btn-info btn-xs view_order_details" data-order_id="' . $data->order_id . '" ><b><i class="fa fa-folder"></i> Details </b></button> &nbsp;';
                 return $action;
             })
             //  ->removeColumn('id')
