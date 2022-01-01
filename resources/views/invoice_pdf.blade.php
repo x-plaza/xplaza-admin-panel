@@ -7,7 +7,7 @@
 
 <?php
 //    $totalAmount= $paymentInfo->pay_amount + $paymentInfo->transaction_charge_amount + $paymentInfo->vat_amount;
-$invoice = 'INVGEN'.$orderDetailsData->invoice_number;
+$invoice = $orderDetailsData->invoice_number;
 ?>
 
 <section class="content" id="applicationForm" style="font-size: 5px !important;">
@@ -17,7 +17,7 @@ $invoice = 'INVGEN'.$orderDetailsData->invoice_number;
 
                 <img src="admin_src/logo.png" style="height: 50px;margin-left: 37%;" alt="singnature"/>
 
-                <h2>INVOICE # {{$invoice}} </h2>
+                <h2>INVOICE  {{$invoice}} </h2>
 
                 <div class="header_div">
                     <div class="left_content">

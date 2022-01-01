@@ -74,7 +74,7 @@ class invoiceController extends Controller
         $mpdf->defaultfooterfontstyle = 'B';
         $mpdf->defaultfooterline = 0;
 
-        $invoice = 'INVGEN'.$orderDetailsData->invoice_number;
+        $invoice = $orderDetailsData->invoice_number;
         $mpdf->SetCompression(true);
         $mpdf->Output( 'invoice_'.$invoice.'.pdf', 'I');
     }

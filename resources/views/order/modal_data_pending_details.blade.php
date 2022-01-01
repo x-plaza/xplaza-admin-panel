@@ -1,11 +1,11 @@
 
 <?php
 //    $totalAmount= $paymentInfo->pay_amount + $paymentInfo->transaction_charge_amount + $paymentInfo->vat_amount;
-$invoice = 'INVGEN'.$orderDetailsData->invoice_number;
+$invoice = $orderDetailsData->invoice_number;
 ?>
 <div class="row" style="margin-bottom: 10px;">
   <div class="col-md-12" >
-    <h4>INVOICE # {{$invoice}} </h4>
+    <h4>INVOICE  {{$invoice}} </h4>
     <a href="javascript:void(0)" class="list-group-item AddToInvoice">Customer Name <b
               style="float: right;color: black;">{{$orderDetailsData->customer_name}}</b></a>
     <a href="javascript:void(0)" class="list-group-item AddToInvoice">Customer Mobile <b
@@ -109,7 +109,7 @@ $invoice = 'INVGEN'.$orderDetailsData->invoice_number;
 </div>
 <div class="clearfix"></br></div>
 
-<input type="hidden" class="invoice_number" value="{{$orderDetailsData->invoice_number}}">
+<input type="hidden" class="invoice_number" value="{{$orderDetailsData->order_id}}">
 <input type="hidden" class="current_status_id" value="{{$orderDetailsData->status_id}}">
 
 <div class="row">
@@ -131,7 +131,7 @@ $invoice = 'INVGEN'.$orderDetailsData->invoice_number;
     </div>
 
     <div class="input-group col-md-6 pull-right" >
-         <a href="{{url('/order/invoice/'.$orderDetailsData->invoice_number)}}" target="_blank" class="btn btn-md btn-info"><i class="fa fa-print"></i> Print Invoice</a>
+         <a href="{{url('/order/invoice/'.$orderDetailsData->order_id)}}" target="_blank" class="btn btn-md btn-info"><i class="fa fa-print"></i> Print Invoice</a>
     </div>
 
 </div>
