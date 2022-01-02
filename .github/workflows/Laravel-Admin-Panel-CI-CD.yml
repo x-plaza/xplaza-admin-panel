@@ -2,36 +2,35 @@ name: Admin Panel Laravel CI/CD
 
 on:
   push:
-    branches: [ xwinkel ]
+    branches: [dev]
   pull_request:
-    branches: [ xwinkel ]
+    branches: [dev]
 
 jobs:
-      
   deploy:
-      name: Deploy and Setup
-      runs-on: ubuntu-latest
-      steps:
-          -   name: Checkout Repository
-              uses: actions/checkout@v2
-          -   name: Deploy to Server
-              uses: ngocquyhoang/deploy@laravel
-              with:
-                  user:  ${{ secrets.SSH_USER }}
-                  host:  ${{ secrets.HOST }}
-                  path:  ${{ secrets.PATH }}
-                  owner: ${{ secrets.OWNER }}
-              env:
-                  DEPLOY_KEY: ${{ secrets.SSH_KEY }}
-                  
-          - name: Run a script on remote server (setup)
-            if: always()
-            uses: fifsky/ssh-action@master
-            with:
-                command: |
-                  cd ${{ secrets.PATH }} && composer install && find . -type f -exec chmod 644 {} \; && find . -type d -exec chmod 755 {} \; &
-                host: ${{ secrets.HOST }}
-                user: ${{ secrets.SSH_USER }}
-                pass: ${{ secrets.SSH_PASSWORD }}
-                args: "-tt"
-                # The & in the command runs the process on background
+    name: Deploy and Setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Deploy to Server
+        uses: ngocquyhoang/deploy@laravel
+        with:
+          user: ${{ secrets.SSH_USER }}
+          host: ${{ secrets.HOST }}
+          path: ${{ secrets.DEV_PATH }}
+          owner: ${{ secrets.OWNER }}
+        env:
+          DEPLOY_KEY: ${{ secrets.SSH_KEY }}
+
+      - name: Run a script on remote server (setup)
+        if: always()
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.DEV_PATH }} && composer install && find . -type f -exec chmod 644 {} \; && find . -type d -exec chmod 755 {} \; &
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.SSH_USER }}
+          pass: ${{ secrets.SSH_PASSWORD }}
+          args: "-tt"
+          # The & in the command runs the process on background
