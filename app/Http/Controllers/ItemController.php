@@ -372,7 +372,7 @@ class ItemController extends Controller
         $item_id = $request->get('item_id');
         $quantity = $request->get('quantity');
         $item_name = $request->get('item_name');
-        $item_image = $request->get('item_image');
+        $item_image_exist = $request->get('item_image_exist');
         $description = $request->get('description');
         $shop_id = $request->get('shop_id');
         $brand_id = $request->get('brand_id');
@@ -382,25 +382,25 @@ class ItemController extends Controller
         $currency_id = $request->get('currency_id');
         $product_var_type_id = $request->get('product_var_type_id');
         $product_var_type_value = $request->get('product_var_type_value');
-        $edit_image_name_hidden = $request->get('edit_image_name_hidden');
+        $edit_image_base64_hidden = $request->get('edit_image_base64_hidden');
 
-        $productImage[] = [
-            'name'=>$edit_image_name_hidden,
-            'path'=>'item_image/'.$edit_image_name_hidden,
-            'product_id'=>$item_id,
-        ];
-
-        if( isset($item_image)){
-            list($type, $data) = explode(';', $item_image);
+        if( isset($edit_image_base64_hidden)){
+            list($type, $data) = explode(';', $edit_image_base64_hidden);
             list(, $data) = explode(',', $data);
             $image     = Image::make(base64_decode($data))->encode('jpg');
             $imageName = date('ymdhis') . '.jpg';
-          //  $image->save(public_path() . '/item_image/' . $imageName);
-            $image->save('item_image/' . $imageName);
+            $image->save(public_path() . '/item_image/' . $imageName);
+         //   $image->save('item_image/' . $imageName);
 
             $productImage[] = [
                 'name'=>$imageName,
-                'path'=>'item_image/'.$imageName,
+                'path'=>'/item_image/'.$imageName,
+                'product_id'=>$item_id,
+            ];
+        }else{
+            $productImage[] = [
+                'name'=>$item_image_exist,
+                'path'=>'item_image/'.$item_image_exist,
                 'product_id'=>$item_id,
             ];
         }
