@@ -15,7 +15,7 @@ $invoice = $orderDetailsData->invoice_number;
         <div class="box">
             <div class="box-body">
 
-                <img src="admin_src/logo.png" style="height: 50px;margin-left: 37%;" alt="singnature"/>
+                <img src="{{ asset('admin_src/logo.png' )}}" style="height: 50px;margin-left: 37%;" alt="singnature"/>
 
                 <h2>INVOICE  {{$invoice}} </h2>
 

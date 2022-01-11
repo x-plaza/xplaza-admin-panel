@@ -70,7 +70,7 @@ class ItemController extends Controller
 
     public function getList(Request $request)
     {
-        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/product/by-shop?shop_id=".intval($request->get('shop_id'));
+        $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/product/by-shop-by-admin?shop_id=".intval($request->get('shop_id'));
         $curlOutput  = HandleApi::getCURLOutput( $api_url, 'GET', [] );
 
         $decodedData = json_decode($curlOutput);
