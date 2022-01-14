@@ -39,13 +39,21 @@ class homeController extends Controller
     {
         try {
 
-            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/dashboard?shop_id=".intval($request->get('shop_id'));
+            $shop_id = intval($request->get('shop_id'));
+            $monthId = intval($request->get('monthId'));
+
+            $api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/dashboard?shop_id=".$shop_id;
             $curlOutput  = HandleApi::getCURLOutput( $api_url, 'POST', [] );
             $decodedData = json_decode($curlOutput);
             $shop_data = isset($decodedData->data) ? $decodedData->data : [];
 
+            $profit_api_url = env('API_BASE_URL','https://xplaza-backend.herokuapp.com')."/api/dashboard/monthly-profit?month=".$monthId."&shop_id=".$shop_id;
+            $profit_curlOutput  = HandleApi::getCURLOutput( $profit_api_url, 'POST', [] );
+            $profit_decodedData = json_decode($profit_curlOutput);
+            $profit_data = isset($profit_decodedData->data) ? $profit_decodedData->data : 0;
 
-            $public_html = strval(view("dashboard_content", compact('shop_data')));
+
+            $public_html = strval(view("dashboard_content", compact('shop_data','profit_data')));
             return response()->json(['responseCode' => 1, 'html' => $public_html]);
 
         } catch (\Exception $e) {

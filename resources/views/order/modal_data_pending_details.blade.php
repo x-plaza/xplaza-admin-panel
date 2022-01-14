@@ -88,10 +88,10 @@ $invoice = $orderDetailsData->invoice_number;
       <td colspan="4">Total</td>
       <td>{{$orderDetailsData->total_price}}</td>
     </tr>
-    <tr>
-      <td colspan="4">Discount</td>
-      <td>{{$orderDetailsData->discount_amount}}</td>
-    </tr>
+{{--    <tr>--}}
+{{--      <td colspan="4">Discount</td>--}}
+{{--      <td>{{$orderDetailsData->discount_amount}}</td>--}}
+{{--    </tr>--}}
     <tr>
       <td colspan="4">Coupon Amount</td>
       <td>{{$orderDetailsData->coupon_amount}}</td>
