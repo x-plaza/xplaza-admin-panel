@@ -15,7 +15,7 @@ $invoice = $orderDetailsData->invoice_number;
         <div class="box">
             <div class="box-body">
 
-                <img src="admin_src/logo.png" style="height: 50px;margin-left: 37%;" alt="singnature"/>
+                <img src="{{ asset('admin_src/logo.png' )}}" style="height: 50px;margin-left: 37%;" alt="singnature"/>
 
                 <h2>INVOICE  {{$invoice}} </h2>
 
@@ -98,10 +98,10 @@ $invoice = $orderDetailsData->invoice_number;
                         <td colspan="3">Total</td>
                         <td> {{$orderDetailsData->total_price}}</td>
                     </tr>
-                    <tr>
-                        <td colspan="3">Discount</td>
-                        <td> {{$orderDetailsData->discount_amount}}</td>
-                    </tr>
+{{--                    <tr>--}}
+{{--                        <td colspan="3">Discount</td>--}}
+{{--                        <td> {{$orderDetailsData->discount_amount}}</td>--}}
+{{--                    </tr>--}}
                     <tr>
                         <td colspan="3">Coupon Amount</td>
                         <td> {{$orderDetailsData->coupon_amount}}</td>
