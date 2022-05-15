@@ -1,4 +1,4 @@
-name: Customer Panel Laravel CI/CD
+name: Admin Panel Laravel CI/CD
 
 on:
   push:
