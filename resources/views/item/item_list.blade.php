@@ -328,8 +328,8 @@
                     type:'square' //circle
                 },
                 boundary:{
-                    width:110,
-                    height:110
+                    width:255,
+                    height:255
                 }
             });
 
